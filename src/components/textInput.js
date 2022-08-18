@@ -6,7 +6,7 @@ import { useTheme } from "react-native-paper";
 const TextInputs = ({ placeholder = "", style = {} }) => {
   const { fonts, colors } = useTheme();
   return (
-    <TextInput
+    <TextInput placeholderTextColor={colors.textColor1}
       theme={{ colors: { text: color.blue,placeholder:"#ffffff" } }}
       placeholder={placeholder}
       style={{

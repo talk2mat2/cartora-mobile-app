@@ -9,6 +9,8 @@ import {
 import { color, fontConfig, fonts } from "./src/constants";
 import { useFonts } from "expo-font";
 import Login from "./src/screens/login";
+import SignUp from "./src/screens/signup";
+import VerifyEmail from "./src/screens/verifyemail";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -34,7 +36,9 @@ export default function App() {
 
   return (
     <PaperProvider theme={theme}>
-      <Login />
+      {/* <Login /> */}
+      {/* <SignUp/> */}
+      <VerifyEmail/>
       <StatusBar style="auto" />
     </PaperProvider>
   );

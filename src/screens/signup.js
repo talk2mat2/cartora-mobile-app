@@ -6,7 +6,7 @@ import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
 import { Formik } from "formik";
 
-const Login = () => {
+const SignUp = () => {
   const { colors, fonts } = useTheme();
 
   return (
@@ -16,35 +16,22 @@ const Login = () => {
         onSubmit={(values) => console.log(values)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
-          <View style={{width:"75%"}}>
-            <View style={{ alignItems: "center" }}>
-              <Image
-                style={styles.tinyLogo}
-                source={require("../../assets/logo2.png")}
-              />
-            </View>
+          <View style={{ width: "75%" }}>
             <View style={{ marginVertical: 7 }}>
-              <TextInputs placeholder="Email Address or Username" />
+              <TextInputs placeholder="Email Address" />
+              <TextInputs placeholder="Brand or Name" />
               <TextInputs placeholder="Password" />
+              <TextInputs placeholder="Username" />
+              <View style={{ marginHorizontal: 30 }}>
+                <Text style={{ ...fonts.h1, color: colors.textColor1 }}>
+                  Country
+                </Text>
+              </View>
             </View>
             <View style={{ alignItems: "center", marginTop: 10 }}>
-              <ButtonC style={{ width: 110 }} title="Login" />
-            </View>
-            <View
-              style={{ alignItems: "center", marginTop: 10, paddingBottom: 8 }}
-            >
-              <Text
-                style={{
-                  color: color.blue,
-                  marginVertical: 5,
-                  fontWeight: "700",
-                }}
-              >
-                New Here ?{" "}
-              </Text>
               <ButtonC
                 style={{ paddingHorizontal: 10 }}
-                title="Create New Account"
+                title="Create Account"
               />
             </View>
           </View>
@@ -68,4 +55,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default SignUp;
