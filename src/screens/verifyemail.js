@@ -30,12 +30,20 @@ const VerifyEmail = () => {
         <View style={{ width: "75%" }}>
           <View style={{ marginVertical: 1 }}>
             <View style={{ marginHorizontal: 10, alignItems: "center" }}>
-              <Text style={{ ...fonts.h1, color: colors.textColor1 }}>
+              <Text
+                style={{
+                  ...fonts.h1,
+                  color: colors.textColor1,
+                  fontWeight: "700",
+                }}
+              >
                 VERIFY EMAIL
               </Text>
             </View>
           </View>
-          <View style={{ marginTop: 6, paddingHorizontal: 40 }}>
+          <View
+            style={{ marginTop: 6, paddingHorizontal: 40, marginBottom: 10 }}
+          >
             <CodeField
               ref={ref}
               {...props}
@@ -68,13 +76,19 @@ const VerifyEmail = () => {
               until={60 * 10 + 30}
               size={17}
               onFinish={() => alert("Finished")}
-              digitStyle={{ padding:0 ,height:31,width:26}}
-              digitTxtStyle={{ color: color.blue, fontWeight: "700" ,fontSize:20}}
+              digitStyle={{ padding: 0, height: 31, width: 26 }}
+              digitTxtStyle={{
+                color: "#8e8e8e",
+                fontWeight: "700",
+                fontSize: 20,
+              }}
               timeToShow={["M", "S"]}
               showSeparator
               timeLabels={{ m: "", s: "" }}
             />
-            <Text style={fonts.h1}>s LEFT</Text>
+            <Text style={{ ...fonts.h1, fontWeight: "700", color: "#8e8e8e" }}>
+              s LEFT
+            </Text>
           </View>
           <View style={{ alignItems: "center", marginTop: 20 }}>
             <ButtonC

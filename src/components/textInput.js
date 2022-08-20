@@ -6,13 +6,13 @@ import { useTheme } from "react-native-paper";
 const TextInputs = ({ placeholder = "", style = {} }) => {
   const { fonts, colors } = useTheme();
   return (
-    <TextInput placeholderTextColor={colors.textColor1}
-      theme={{ colors: { text: color.blue,placeholder:"#ffffff" } }}
+    <TextInput placeholderTextColor={colors.textColor1} underlineColor={colors.primary}
+      theme={{ colors: { text: color.blue} }}
       placeholder={placeholder}
       style={{
         textAlign: "center",
         fontFamily: "ProximaNova",
-        fontWeight: "500",
+        
         fontSize:17,
         width: "100%",
         justifyContent:"flex-end",
@@ -20,8 +20,8 @@ const TextInputs = ({ placeholder = "", style = {} }) => {
         
         marginVertical: 10,
         backgroundColor: color.body,
-        borderBottomWidth: 2,
-        borderBottomColor: colors.primary,
+        borderBottomWidth: 0.5,
+        // borderBottomColor: colors.primary,
         ...style,
       }}
     />
