@@ -76,6 +76,6 @@ export const fontConfig = {
 };
 
 export const design = {
-  padding1: 10,
+  padding1: 3,
   round1:7,
 };

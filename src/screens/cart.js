@@ -21,6 +21,7 @@ import TextInputs from "../components/textInput";
 import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
+import CartEdit from "../components/cartEdit";
 
 const Cart = () => {
   const { colors, fonts } = useTheme();
@@ -30,11 +31,15 @@ const Cart = () => {
       <Header />
       <View style={styles.header}>
         <View>
-        <ButtonC
-          style={{ backgroundColor: colors.textColor2, paddingHorizontal: 1,borderWidth:0 }}
-          textStyle={{ color: colors.primary, fontWeight: "700" }}
-          title="+ ADD TO COLLECTION"
-        />
+          <ButtonC
+            style={{
+              backgroundColor: colors.textColor2,
+              paddingHorizontal: 1,
+              borderWidth: 0,
+            }}
+            textStyle={{ color: colors.primary, fontWeight: "700" }}
+            title="+ ADD TO COLLECTION"
+          />
           {/* <Text
             style={{
               ...fonts.small,
@@ -52,8 +57,8 @@ const Cart = () => {
           title="POST"
         />
       </View>
-      <View style={styles.section}>
-        <View style={{ flex: 1, alignItems: "center" }}></View>
+      <View style={{marginTop:40}}>
+        <CartEdit />
       </View>
     </View>
   );

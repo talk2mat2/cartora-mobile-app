@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
+    borderRadius:4,
     justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 5,

@@ -14,29 +14,11 @@ import MyTabBar from "./tabbar";
 import Account from "../screens/account";
 import Collections from "../screens/collections";
 import Cart from "../screens/cart";
-const horizontalAnimation = {
-    gestureDirection: 'horizontal',
-    cardStyleInterpolator: ({ current, layouts }) => {
-      return {
-        cardStyle: {
-          transform: [
-            {
-              translateX: current.progress.interpolate({
-                inputRange: [0, 1],
-                outputRange: [layouts.screen.width, 0],
-              }),
-            },
-          ],
-        },
-      };
-    },
-  };
 const HomeScreen = () => {
-  
   const Tab = createBottomTabNavigator();
   return (
-    <Tab.Navigator 
-      screenOptions={{ headerShown: false,...horizontalAnimation }}
+    <Tab.Navigator
+      screenOptions={{ headerShown: false }}
       tabBar={(props) => <MyTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={Discover} />
