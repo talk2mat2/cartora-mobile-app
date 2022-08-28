@@ -13,7 +13,7 @@ import Main from "./src/components/main";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    ProximaNova: require("./assets/fonts/nova.ttf"),
+    ProximaNova: require("./assets/fonts/SFLIGHT.otf"),
     Frunch: require("./assets/fonts/Frunch.ttf"),
   });
 
@@ -31,6 +31,8 @@ export default function App() {
       body: color.body,
       body2: color.grey2,
       body3: color.grey3,
+      body5:color.grey4,
+      body6:color.grey5,
       body4:color.green,
       textColor2: color.white,
       textColor3: color.grey1,

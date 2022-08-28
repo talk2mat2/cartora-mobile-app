@@ -7,6 +7,8 @@ export const color = {
   grey1:"#8e8e8e",
   grey2:"#f2f2f2",
   grey3:"#7b7b7b",
+  grey4:"#f2f2f2",
+  grey5:"#CCCCCC",
   green:"green"
 };
 export const fonts = {

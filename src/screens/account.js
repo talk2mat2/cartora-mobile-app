@@ -98,7 +98,7 @@ const Account = () => {
           style={{
             ...fonts.small,
             color: colors.textColor3,
-            fontWeight: "500",
+            fontWeight: "200",
             paddingLeft: 10,
           }}
         >

@@ -15,13 +15,13 @@ import { Formik } from "formik";
 import DiscoverItem from "../components/discoverItem";
 import Header from "../components/header";
 
-const Discover = () => {
+const Discover = ({ navigation }) => {
   const { colors, fonts, font } = useTheme();
 
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body }}>
-      <Header/>
-      <ScrollView style={{backgroundColor:color.body,...styles.content}}>
+      <Header navigation={navigation} />
+      <ScrollView style={{ backgroundColor: color.body, ...styles.content }}>
         <DiscoverItem />
         <DiscoverItem />
       </ScrollView>
@@ -30,17 +30,16 @@ const Discover = () => {
 };
 
 const styles = StyleSheet.create({
-  content:{
-    paddingHorizontal:design.padding1,
-    paddingBottom:20,
-    height:"90%"
+  content: {
+    paddingHorizontal: design.padding1,
+    paddingBottom: 20,
+    height: "90%",
   },
-  
+
   container: {
     flex: 1,
     backgroundColor: color.body,
     padding: design.padding1,
-   
   },
   tinyLogo: {
     height: 170,

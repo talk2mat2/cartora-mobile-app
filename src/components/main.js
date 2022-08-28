@@ -22,7 +22,7 @@ const HomeScreen = () => {
       tabBar={(props) => <MyTabBar {...props} />}
     >
       <Tab.Screen name="Home" component={Discover} />
-      <Tab.Screen name="Cart" component={Cart} />
+      <Tab.Screen name="Add Cart" component={Cart} />
       <Tab.Screen name="Collections" component={Collections} />
       <Tab.Screen name="Account" component={Account} />
     </Tab.Navigator>
@@ -35,6 +35,10 @@ const Main = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="Signup" component={SignUp} />
+        <Stack.Screen name="NewPassword" component={NewPassword} />
+        <Stack.Screen name="SuccessVerify" component={SuccessVerify} />
       </Stack.Navigator>
     </NavigationContainer>
   );

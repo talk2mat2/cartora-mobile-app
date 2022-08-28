@@ -6,7 +6,7 @@ import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
 import { Formik } from "formik";
 
-const Login = () => {
+const Login = ({ navigation }) => {
   const { colors, fonts } = useTheme();
 
   return (
@@ -16,7 +16,8 @@ const Login = () => {
         onSubmit={(values) => console.log(values)}
       >
         {({ handleChange, handleBlur, handleSubmit, values }) => (
-          <View style={{width:"75%"}}>
+          <View style={{ width: "75%" }}>
+            {/* src/screens/login.js{" "} */}
             <View style={{ alignItems: "center" }}>
               <Image
                 style={styles.tinyLogo}
@@ -40,9 +41,10 @@ const Login = () => {
                   fontWeight: "700",
                 }}
               >
-                New Here ?{" "}
+                New Here ?
               </Text>
               <ButtonC
+                onPress={() => navigation.navigate("Signup")}
                 style={{ paddingHorizontal: 10 }}
                 title="Create New Account"
               />

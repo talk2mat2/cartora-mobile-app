@@ -51,7 +51,7 @@ export default function MyTabBar({ state, descriptors, navigation }) {
             <FontAwesome5 name="copy" size={24} color={color} />
           ) : route.name == "Account" ? (
             <AntDesign name="user" size={24} color={color} />
-          ) : route.name == "Cart" ? (
+          ) : route.name == "Add Cart" ? (
             <AntDesign name="shoppingcart" size={24} color={color} />
           ) : (
             <AntDesign name="star" size={24} color={color} />

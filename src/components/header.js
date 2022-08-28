@@ -14,7 +14,7 @@ import TextInputs from "./textInput";
 import { Formik } from "formik";
 import DiscoverItem from "./discoverItem";
 
-const Header = () => {
+const Header = ({ navigation }) => {
   const { colors, fonts, font } = useTheme();
 
   return (
@@ -23,6 +23,7 @@ const Header = () => {
         Cartora
       </Text>
       <ButtonC
+        onPress={() => (navigation ? navigation.navigate("Login") : null)}
         textStyle={{ color: colors.primary, fontWeight: "700" }}
         style={{ paddingHorizontal: 10 }}
         title="Create Cart"
@@ -38,12 +39,13 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    borderRadius:4,
+    borderRadius: 9,
     justifyContent: "space-between",
     width: "100%",
     paddingHorizontal: 5,
     alignItems: "center",
     paddingVertical: 3,
+    elevation: 4,
   },
   container: {
     flex: 1,
