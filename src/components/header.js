@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   ScrollView,
+  TouchableOpacity,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme } from "react-native-paper";
@@ -13,21 +14,43 @@ import ButtonC from "./buttonc";
 import TextInputs from "./textInput";
 import { Formik } from "formik";
 import DiscoverItem from "./discoverItem";
+import { useSelector } from "react-redux";
+import { FontAwesome } from "@expo/vector-icons";
+import { appToast } from "./Helpers";
 
 const Header = ({ navigation }) => {
   const { colors, fonts, font } = useTheme();
+  const user = useSelector(({ user }) => user);
+  const { show } = appToast();
+
+  const createCart = () => {
+    !user?.isLoggedIn && show("You need login or create account first");
+    setTimeout(() => {
+      navigation && navigation.navigate("Login");
+    }, 2000);
+  };
+
+  const handleSearch = () => {
+    navigation && navigation.navigate("Search");
+  };
 
   return (
     <View style={{ ...styles.header, backgroundColor: colors.primary }}>
       <Text style={{ ...fonts.discoverBrand, color: colors.textColor2 }}>
         Cartora
       </Text>
-      <ButtonC
-        onPress={() => (navigation ? navigation.navigate("Login") : null)}
-        textStyle={{ color: colors.primary, fontWeight: "700" }}
-        style={{ paddingHorizontal: 10 }}
-        title="Create Cart"
-      />
+      {!user?.isLoggedIn ? (
+        <ButtonC
+          onPress={createCart}
+          textStyle={{ color: colors.primary, fontWeight: "700" }}
+          style={{ paddingHorizontal: 10 }}
+          title="Create Cart"
+        />
+      ) : (
+        <TouchableOpacity onPress={handleSearch} style={{ marginRight: 10 }}>
+          <FontAwesome name="search" size={20} color={colors.textColor2} />
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

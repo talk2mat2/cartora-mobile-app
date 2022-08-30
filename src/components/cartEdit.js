@@ -14,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import ButtonC from "./buttonc";
+import ViewShot from "react-native-view-shot";
 
 const CartEdit = ({
   details,
@@ -22,9 +23,13 @@ const CartEdit = ({
   setImage,
   stock,
   title,
+  frameColors,
   detailsPromo,
+  capture,
+  setCapture,
 }) => {
   const { colors, fonts } = useTheme();
+  const ref = React.useRef();
 
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
@@ -41,7 +46,25 @@ const CartEdit = ({
       setImage(result.uri);
     }
   };
+ 
 
+  const captureView = React.useCallback(() => {
+    ref.current.capture().then((uri) => {
+      //we will upload the edited frame view for sharing to socialmedia
+      console.log("do something with ", uri);
+    });
+  },[]);
+  React.useEffect(() => {
+    if (capture === true) {
+      captureView();
+      setCapture(false);
+    }
+  }, [capture]);
+  // const handlePost = () => {
+  //   ref.current.capture().then((uri) => {
+  //     console.log("do something with ", uri);
+  //   });
+  // };
   return (
     <View>
       <Avatar.Image style={styles.Avatar} />
@@ -61,55 +84,58 @@ const CartEdit = ({
             color: colors.textColor2,
           }}
           otherTextProps={{}}
-          title={
-            detailsPromo ? detailsPromo.substring(0, 14) + ".." : "Promo text"
-          }
+          title={detailsPromo ? detailsPromo.substring(0, 17) : "Promo text"}
         />
       </View>
-
-      <LinearGradient
-        start={[0, 1]}
-        end={[1, 0]}
-        colors={["lime", "lime", "orange", colors.secondary]}
-        style={styles.container}
+      <ViewShot
+        // onCapture={onCapture}
+        ref={ref}
+        options={{ format: "jpg", quality: 0.9 }}
       >
-        <View
-          style={{ ...styles.imageContainer, backgroundColor: colors.body }}
+        <LinearGradient
+          start={[0, 1]}
+          end={[1, 0]}
+          colors={frameColors}
+          style={styles.container}
         >
-          <View style={{ ...styles.add }}>
-            {image ? (
-              <TouchableOpacity
-                onPress={pickImage}
-                style={{
-                  borderColor: colors.body3,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={{ uri: image }}
+          <View
+            style={{ ...styles.imageContainer, backgroundColor: colors.body }}
+          >
+            <View style={{ ...styles.add }}>
+              {image ? (
+                <TouchableOpacity
+                  onPress={pickImage}
                   style={{
-                    width: "100%",
-                    aspectRatio: 1,
-                    resizeMode: "contain",
+                    borderColor: colors.body3,
+                    alignItems: "center",
+                    justifyContent: "center",
                   }}
-                />
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                onPress={pickImage}
-                style={{ ...styles.addbtn, borderColor: colors.body3 }}
-              >
-                <Ionicons
-                  name="ios-add-circle-outline"
-                  size={120}
-                  color={colors.body6}
-                />
-              </TouchableOpacity>
-            )}
+                >
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      width: "100%",
+                      aspectRatio: 1,
+                      resizeMode: "contain",
+                    }}
+                  />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={pickImage}
+                  style={{ ...styles.addbtn, borderColor: colors.body3 }}
+                >
+                  <Ionicons
+                    name="ios-add-circle-outline"
+                    size={120}
+                    color={colors.body6}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-        </View>
-      </LinearGradient>
+        </LinearGradient>
+      </ViewShot>
       <View style={{ ...styles.footerItem }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View>
@@ -121,7 +147,7 @@ const CartEdit = ({
                   fontSize: 16,
                 }}
               >
-                N{price}
+                N{price || " --,--"}
               </Text>
               {!stock ? (
                 <Text
@@ -140,11 +166,12 @@ const CartEdit = ({
                   style={{
                     ...fonts.small,
                     marginLeft: 20,
-                    fontSize: 13,
+                    fontSize: 16,
                     color: colors.body4,
+                    fontWeight: "bold",
                   }}
                 >
-                  in stock
+                  In stock
                 </Text>
               )}
             </View>

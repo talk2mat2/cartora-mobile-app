@@ -1,21 +1,86 @@
 import React from "react";
-import { View, StyleSheet, Text, TextInput, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  TextInput,
+  Image,
+  Keyboard,
+} from "react-native";
 import { color, design } from "../constants";
-import { useTheme } from "react-native-paper";
+import { useTheme, HelperText } from "react-native-paper";
 import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
 import { Formik } from "formik";
+import * as Yup from "yup";
+import { useMutations } from "../services/api";
+import WithSpinner from "../components/withspinner";
+import { useDispatch } from "react-redux";
+import { logIn } from "../redux/reducers/usersSlice";
+import { appToast, AsyncSave } from "../components/Helpers";
 
-const Login = ({ navigation }) => {
+const logiSchema = Yup.object().shape({
+  email: Yup.string().required("Required"),
+  password: Yup.string()
+    .min(5, "password is too short")
+    .max(80, "password is too long")
+    .required(),
+});
+
+const Login = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
+  const { mutate } = useMutations();
 
+  const { show } = appToast();
+
+  const dispatch = useDispatch();
+  const subMitdata = (datas) => {
+    mutate(
+      {
+        key: "login",
+        method: "post",
+        data: datas,
+      },
+      {
+        onSuccess: (res) => {
+          setLoading(false);
+          show(res?.message, {
+            type: "normal",
+          });
+          dispatch(logIn(res.data[0]));
+          AsyncSave("token", res?.data?.[0]?.token);
+        },
+        onError: (error) => {
+          setLoading(false);
+          show(error?.message);
+        },
+      }
+    );
+  };
+  // React.useEffect(() => {
+  //   toast.show("hello martins", {
+  //     type: "normal",
+  //   });
+  // }, []);
   return (
     <View style={styles.container}>
       <Formik
-        initialValues={{ email: "" }}
-        onSubmit={(values) => console.log(values)}
+        validationSchema={logiSchema}
+        initialValues={{ email: "", password: "" }}
+        onSubmit={(values) => {
+          subMitdata(values);
+          setLoading(true);
+          Keyboard.dismiss();
+        }}
       >
-        {({ handleChange, handleBlur, handleSubmit, values }) => (
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          setFieldValue,
+        }) => (
           <View style={{ width: "75%" }}>
             {/* src/screens/login.js{" "} */}
             <View style={{ alignItems: "center" }}>
@@ -25,11 +90,40 @@ const Login = ({ navigation }) => {
               />
             </View>
             <View style={{ marginVertical: 7 }}>
-              <TextInputs placeholder="Email Address or Username" />
-              <TextInputs placeholder="Password" />
+              <TextInputs
+                style={styles.input2}
+                value={values.email}
+                onChangeText={(text) => setFieldValue("email", text)}
+                placeholder="Email Address or Username"
+              />
+              <HelperText
+                style={styles.helperText}
+                type="error"
+                visible={errors.email}
+              >
+                {errors.email}
+              </HelperText>
+              <TextInputs
+                secureTextEntry={true}
+                style={styles.input2}
+                value={values.password}
+                onChangeText={(txt) => setFieldValue("password", txt)}
+                placeholder="Password"
+              />
+              <HelperText
+                style={styles.helperText}
+                type="error"
+                visible={errors.email}
+              >
+                {errors.password}
+              </HelperText>
             </View>
             <View style={{ alignItems: "center", marginTop: 10 }}>
-              <ButtonC style={{ width: 110 }} title="Login" />
+              <ButtonC
+                onPress={handleSubmit}
+                style={{ width: 110 }}
+                title="Login"
+              />
             </View>
             <View
               style={{ alignItems: "center", marginTop: 10, paddingBottom: 8 }}
@@ -68,6 +162,14 @@ const styles = StyleSheet.create({
     height: 170,
     width: 170,
   },
+  input2: {
+    marginBottom: 0,
+    marginTop: 0,
+  },
+  helperText: {
+    marginTop: 0,
+    paddingVertical: 0,
+  },
 });
 
-export default Login;
+export default WithSpinner(Login);

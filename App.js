@@ -8,8 +8,20 @@ import {
 } from "react-native-paper";
 import { color, fontConfig, fonts } from "./src/constants";
 import { useFonts } from "expo-font";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { ToastProvider } from "react-native-toast-notifications";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from "react-query";
 
 import Main from "./src/components/main";
+import { store, persistor } from "./src/redux/store";
+import Toast from "./src/components/toast";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,7 +32,7 @@ export default function App() {
   if (!fontsLoaded) {
     return null;
   }
-
+  const queryClient = new QueryClient();
   const theme = {
     ...DefaultTheme,
     colors: {
@@ -31,9 +43,9 @@ export default function App() {
       body: color.body,
       body2: color.grey2,
       body3: color.grey3,
-      body5:color.grey4,
-      body6:color.grey5,
-      body4:color.green,
+      body5: color.grey4,
+      body6: color.grey5,
+      body4: color.green,
       textColor2: color.white,
       textColor3: color.grey1,
     },
@@ -43,17 +55,18 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.droidSafeArea}>
-      <PaperProvider theme={theme}>
-        <Main/>
-        {/* <Login /> */}
-        {/* <SignUp/> */}
-        {/* <VerifyEmail/> */}
-        {/* <Welcome /> */}
-        {/* <SuccessVerify/> */}
-        {/* <NewPassword/> */}
-      
-        <StatusBar style="auto" />
-      </PaperProvider>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <QueryClientProvider client={queryClient}>
+            <PaperProvider theme={theme}>
+              <ToastProvider    offsetBottom={70} renderToast={(toast) => <Toast toast={toast} />}>
+                <Main />
+                <StatusBar style="auto" />
+              </ToastProvider>
+            </PaperProvider>
+          </QueryClientProvider>
+        </PersistGate>
+      </Provider>
     </SafeAreaView>
   );
 }

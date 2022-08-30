@@ -23,29 +23,55 @@ import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
 import CartEdit from "../components/cartEdit";
+import ColorModal from "../components/colorModal";
+import { useSelector } from "react-redux";
+import { appToast } from "../components/Helpers";
 
-const Cart = () => {
+const Cart = ({ navigation }) => {
   const { colors, fonts } = useTheme();
   const [eidtText, setEdittest] = useState(false);
   const [showPrice, setShowPrice] = useState(false);
+  const [stock, setStock] = useState(false);
+  const [colorVisible, setColorVisible] = useState();
   const [image, setImage] = React.useState(null);
   const [editPrice, setEditPrice] = useState(0);
   const [detailsFull, setDetailsFull] = useState("");
   const [details, setDetails] = useState("");
+  const [frameColors, setFrameColors] = useState([
+    "#cccccc",
+    "#ffffff",
+    "#cccccc",
+    "#cccccc",
+  ]);
 
   const [detailsPromo, setDetailsPromo] = useState("");
   const [detailsPromofull, setDetailsPromofull] = useState("");
-
+  const [capture, setCapture] = useState(false);
   const [detailsFulltitle, setDetailsFulltitle] = useState("");
   const [detailstitle, setDetailstitle] = useState("");
   const showEditPrice = () => setShowPrice(true);
   const hideEditPrice = () => setShowPrice(false);
   const showEditTest = () => setEdittest(true);
   const hideEditTest = () => setEdittest(false);
+  const showColorEdit = () => setColorVisible(true);
+  const hideColorEdit = () => setColorVisible(true);
   const clearImage = () => setImage(null);
+  const user = useSelector(({ user }) => user);
+  const { show } = appToast();
+  const onCapture = React.useCallback((uri) => {
+    console.log("do something with ", uri);
+  }, []);
+  const ref = React.useRef();
+  const handlePost = () => {
+    if (!user.isLoggedIn) {
+      show("you need to login to Post a cart :)");
+    } else {
+      setCapture(true);
+    }
+  };
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       <View style={{ ...styles.header, borderColor: colors.body5 }}>
         <View>
           <ButtonC
@@ -62,11 +88,12 @@ const Cart = () => {
           style={{ backgroundColor: colors.primary, paddingHorizontal: 20 }}
           textStyle={{ color: colors.textColor2, fontWeight: "700" }}
           title="POST"
+          onPress={handlePost}
         />
       </View>
       <View style={{ marginTop: 40 }}>
         <CartEdit
-          {...{ image, setImage }}
+          {...{ image, setImage, frameColors, stock, capture, setCapture }}
           details={detailsFull}
           price={editPrice}
           title={detailsFulltitle}
@@ -93,7 +120,7 @@ const Cart = () => {
             style={{
               ...styles.editText,
               borderColor: colors.body6,
-              height: 30,
+              height: 33,
             }}
             maxLength={200}
             value={detailstitle}
@@ -116,12 +143,12 @@ const Cart = () => {
             style={{
               ...styles.editText,
               borderColor: colors.body6,
-              height: 30,
+              height: 32,
             }}
             maxLength={200}
             value={detailsPromo}
             onChangeText={setDetailsPromo}
-            placeholder="title"
+            placeholder="Promo Text"
           />
           <View style={{ alignItems: "flex-end" }}>
             <ButtonC
@@ -187,6 +214,9 @@ const Cart = () => {
           </View>
         </Modal>
       </Portal>
+      <ColorModal
+        {...{ colorVisible, setColorVisible, frameColors, setFrameColors }}
+      />
       <ScrollView
         showsHorizontalScrollIndicator={false}
         // contentContainerStyle={{ justifyContent: "space-around" }}
@@ -214,11 +244,13 @@ const Cart = () => {
           style={styles.editbtn}
           textStyle={styles.editBtnTxt}
           title="COLOUR"
+          onPress={showColorEdit}
         />
         <ButtonC
           style={styles.editbtn}
           textStyle={styles.editBtnTxt}
-          title="ACTIONS"
+          title="SET STOCK"
+          onPress={() => setStock(!stock)}
         />
         <ButtonC
           style={styles.editbtn}

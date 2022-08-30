@@ -5,9 +5,18 @@ import { useTheme } from "react-native-paper";
 import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
 import { Formik } from "formik";
+import { useDispatch } from "react-redux";
+import { completeOnboard } from "../redux/reducers/usersSlice";
 
-const Welcome = () => {
+const Welcome = ({ navigation }) => {
   const { colors, fonts, font } = useTheme();
+  const dispatch = useDispatch();
+
+  
+  const enter = () => {
+    navigation.navigate("HomeScreen");
+    dispatch(completeOnboard());
+  };
 
   return (
     <View style={{ ...styles.container, backgroundColor: colors.secondary }}>
@@ -44,6 +53,7 @@ const Welcome = () => {
       </View>
       <View style={{ alignItems: "center", marginTop: 60 }}>
         <ButtonC
+          onPress={enter}
           textStyle={{ color: colors.textColor2 }}
           style={{
             paddingHorizontal: 30,
@@ -63,7 +73,7 @@ const styles = StyleSheet.create({
 
     padding: design.padding1,
     alignItems: "center",
-    paddingTop:"35%"
+    paddingTop: "35%",
   },
   tinyLogo: {
     height: 170,

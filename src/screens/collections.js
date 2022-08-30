@@ -22,12 +22,12 @@ import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
 
-const Collections = () => {
+const Collections = ({ navigation }) => {
   const { colors, fonts } = useTheme();
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       <View style={styles.section}>
         <View style={{ flex: 1, alignItems: "center" }}>
           <FlatList

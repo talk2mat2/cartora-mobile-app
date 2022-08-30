@@ -3,8 +3,13 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import EntypoIcons from "@expo/vector-icons/Entypo";
 import ButtonC from "./buttonc";
+import { appToast } from "./Helpers";
 const DiscoverItem = () => {
   const { colors, fonts } = useTheme();
+  const { show } = appToast();
+  const handleknit = () => {
+    show("this feature is comming soon");
+  };
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
       <View style={{ ...styles.headerItem, backgroundColor: colors.body }}>
@@ -29,6 +34,7 @@ const DiscoverItem = () => {
         </View>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <ButtonC
+            onPress={handleknit}
             style={{
               paddingHorizontal: 20,
               borderColor: colors.body3,
