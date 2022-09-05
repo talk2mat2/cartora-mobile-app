@@ -6,6 +6,8 @@ import {
   TextInput,
   Image,
   ScrollView,
+  ActivityIndicator,
+  FlatList,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme } from "react-native-paper";
@@ -19,19 +21,28 @@ import { useClientQuery } from "../services/api";
 
 const Discover = ({ navigation, setLoading }) => {
   const { colors, fonts, font } = useTheme();
-  const { data, isError, isLoading } = useClientQuery("Users");
-  React.useEffect(() => {
-    console.log(data);
-  }, [data]);
+  const { data, isError, isLoading, refetch } = useClientQuery("Products");
+  // React.useEffect(() => {
+  //   console.log("data=", data);
+  // }, [data]);
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body }}>
       <Header navigation={navigation} />
-      <ScrollView style={{ backgroundColor: color.body, ...styles.content }}>
-        <DiscoverItem />
-        <DiscoverItem />
-        <DiscoverItem />
-        <DiscoverItem />
-      </ScrollView>
+      {isLoading && <ActivityIndicator size={50} style={styles.spinner} />}
+      {/* <ScrollView style={{ backgroundColor: color.body, ...styles.content }}>
+        {data?.data.length > 0 && data.data.map((item) => <DiscoverItem key={item.id} item={item}/>)}
+      </ScrollView> */}
+      {data?.data.length && (
+        <FlatList
+          onRefresh={refetch}
+          refreshing={false}
+          data={data?.data}
+          renderItem={({ item, index }) => (
+            <DiscoverItem key={item.id} item={item} />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };
@@ -62,6 +73,14 @@ const styles = StyleSheet.create({
   imageView: {
     borderRadius: 100,
     marginBottom: 40,
+  },
+  spinner: {
+    position: "absolute",
+    zIndex: 10,
+    elevation: 10,
+
+    alignSelf: "center",
+    marginTop: "45%",
   },
 });
 

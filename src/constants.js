@@ -19,13 +19,37 @@ export const fonts = {
 
 export const fontConfig = {
   ios: {
-    regular: {
+    h1: {
       fontFamily: "ProximaNova",
-      fontWeight: "normal",
+      // fontWeight: "normal",
+      fontSize: 17,
     },
+    header2: {
+      fontFamily: "Frunch",
+      // fontWeight: "700",
+      letterSpacing: 1,
+      fontSize: 35,
+    },
+    discoverBrand: {
+      fontFamily: "Frunch",
+      fontSize: 25,
+    },
+    paraOne: {
+      fontFamily: "ProximaNova",
+
+      letterSpacing: 1,
+      lineHeight: 23,
+    },
+    small: {
+      fontFamily: "ProximaNova",
+      // fontWeight: "700",
+      fontSize: 17,
+    },
+
     medium: {
-      fontFamily: "sans-serif-medium",
-      fontWeight: "normal",
+      fontWeight: "500",
+      fontFamily: "ProximaNova",
+      fontSize: 25,
     },
     light: {
       fontFamily: "sans-serif-light",

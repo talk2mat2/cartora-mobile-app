@@ -4,7 +4,8 @@ import { Platform } from "react-native";
 const ENV = {
   dev: {
     // apiUrl: "https://jsonplaceholder.typicode.com/todos",
-    apiUrl:"http://192.168.43.139:5262/api/v1/Users",
+    apiUrl:"http://192.168.43.139:5262/api/v1",
+    // apiUrl:"http://localhost:5262/api/v1",
     amplitudeApiKey: null,
   },
   staging: {

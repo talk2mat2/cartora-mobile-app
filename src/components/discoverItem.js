@@ -1,15 +1,76 @@
 import React from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
-import { useTheme, Avatar } from "react-native-paper";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  TouchableHighlight,
+  Linking,
+  Animated,
+  TouchableWithoutFeedback,
+} from "react-native";
+import {
+  useTheme,
+  Avatar,
+  Button,
+  Menu,
+  Divider,
+  Provider,
+} from "react-native-paper";
+
 import EntypoIcons from "@expo/vector-icons/Entypo";
 import ButtonC from "./buttonc";
 import { appToast } from "./Helpers";
-const DiscoverItem = () => {
+import { debounce } from "lodash";
+import { AntDesign } from "@expo/vector-icons";
+const DiscoverItem = ({ item }) => {
+
+  const [visible, setVisible] = React.useState(false);
+  const [learnMore, setLearnMore] = React.useState(false);
   const { colors, fonts } = useTheme();
   const { show } = appToast();
+  const openMenu = () => setVisible(true);
+  const _animation = new Animated.Value(0);
+
+  const closeMenu = () => setVisible(false);
   const handleknit = () => {
     show("this feature is comming soon");
   };
+  const animatedStyle = {
+    opacity: _animation,
+  };
+
+  // const Menus = (
+  //   <Menu
+  //     visible={visible}
+  //     onDismiss={closeMenu}
+  //     anchor={<Button onPress={openMenu}>Show menu</Button>}
+  //   >
+  //     <Menu.Item onPress={() => {}} title="Item 1" />
+  //     <Menu.Item onPress={() => {}} title="Item 2" />
+  //     <Divider />
+  //     <Menu.Item onPress={() => {}} title="Item 3" />
+  //   </Menu>
+  // );
+  const closeOverlay = debounce(() => {
+    setLearnMore(false);
+  }, 5000);
+
+  const openOverlay = () => {
+    setLearnMore(true);
+    console.log("called");
+  };
+  const devLink = "http://api.whatsapp.com/send?phone=234$9051322343";
+  React.useEffect(() => {
+    if (learnMore) {
+      Animated.timing(_animation, {
+        toValue: 0.7,
+        duration: 700,
+        useNativeDriver: false,
+      }).start();
+    }
+    learnMore && closeOverlay();
+  }, [learnMore]);
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
       <View style={{ ...styles.headerItem, backgroundColor: colors.body }}>
@@ -25,9 +86,9 @@ const DiscoverItem = () => {
                 paddingVertical: 5,
               }}
             >
-              Daren Store {"\n"}
+              {item?.user?.brand}{"\n"}
               <Text style={{ ...fonts.small, fontWeight: "700", fontSize: 12 }}>
-                @ darenstore
+                @{item?.user?.userName}
               </Text>
             </Text>
           </View>
@@ -43,18 +104,76 @@ const DiscoverItem = () => {
             textStyle={{ fontSize: 13, fontWeight: "bold" }}
             title="KNIT IT"
           />
-          <EntypoIcons
-            name="dots-three-vertical"
-            size={20}
-            color={colors.textColor3}
-          />
+
+          <Menu
+            visible={visible}
+            onDismiss={closeMenu}
+            anchor={
+              <TouchableHighlight
+                underlayColor={colors.body6}
+                onPress={openMenu}
+              >
+                <EntypoIcons
+                  name="dots-three-vertical"
+                  size={20}
+                  color={colors.textColor3}
+                />
+              </TouchableHighlight>
+            }
+          >
+            {/* SHARE, REPORT, UNKNIT, LIKE */}
+            <Menu.Item
+              titleStyle={{ ...fonts.small }}
+              style={{ height: 40, backgroundColor: colors.body }}
+              // onPress={() => {}}
+              title="Share"
+            />
+
+            <Menu.Item
+              titleStyle={{ ...fonts.small }}
+              style={{ height: 40, backgroundColor: colors.body }}
+              onPress={() => {}}
+              title="Report"
+            />
+
+            <Menu.Item
+              titleStyle={{ ...fonts.small }}
+              style={{ height: 40, backgroundColor: colors.body }}
+              onPress={() => {}}
+              title="Like"
+            />
+          </Menu>
         </View>
       </View>
-      <View style={{ width: "100%", aspectRatio: 1 }}>
-        <Image
-          style={styles.stock}
-          source={require("../../assets/stock.png")}
-        />
+      <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
+        {learnMore && (
+          <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
+            <Text style={{ ...fonts.small, color: colors.body }}>
+              CLICK TO LEARN MORE ON THIS PRODUCT
+            </Text>
+            <ButtonC
+              onPress={() => {
+                Linking.openURL(devLink);
+              }}
+              style={{
+                paddingHorizontal: 10,
+                backgroundColor: colors.body,
+                borderWidth: 0,
+                marginTop: 9,
+              }}
+              title="LEARN MORE"
+            />
+          </Animated.View>
+        )}
+
+        <TouchableWithoutFeedback onPress={() => openOverlay()}>
+          <Image
+            style={styles.stock}
+            // source={require("../../assets/stock.png")}
+            source={{uri:item?.snapshot || ""}}
+            snapshot
+          />
+        </TouchableWithoutFeedback>
       </View>
       <View style={{ ...styles.footerItem }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -112,6 +231,15 @@ const DiscoverItem = () => {
   );
 };
 const styles = StyleSheet.create({
+  overLay: {
+    position: "absolute",
+    height: "100%",
+    width: "100%",
+    backgroundColor: "rgb(0,0,0)",
+    zIndex: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   footerItem: {
     marginTop: "auto",
     minHeight: 20,

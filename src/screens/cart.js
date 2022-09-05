@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   ScrollView,
+  Platform,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme, Avatar, Modal, Portal } from "react-native-paper";
@@ -26,16 +27,19 @@ import CartEdit from "../components/cartEdit";
 import ColorModal from "../components/colorModal";
 import { useSelector } from "react-redux";
 import { appToast } from "../components/Helpers";
+import { useUploadMutations } from "../services/api";
+import WithSpinner from "../components/withspinner";
 
-const Cart = ({ navigation }) => {
+const Cart = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const [eidtText, setEdittest] = useState(false);
+  const { mutate } = useUploadMutations();
   const [showPrice, setShowPrice] = useState(false);
   const [stock, setStock] = useState(false);
   const [colorVisible, setColorVisible] = useState();
   const [image, setImage] = React.useState(null);
   const [editPrice, setEditPrice] = useState(0);
-  const [detailsFull, setDetailsFull] = useState("");
+  const [detailsFull, setDetailsFull] = useState("g");
   const [details, setDetails] = useState("");
   const [frameColors, setFrameColors] = useState([
     "#cccccc",
@@ -69,6 +73,72 @@ const Cart = ({ navigation }) => {
       setCapture(true);
     }
   };
+
+  // public string description { get; set; } = "";
+  // public bool? stock { get; set; } = true;
+  // public List<string> frameColors { get; set; } = new List<string> { };
+  // //public string frameColors { get; set; } = "";
+  // public string? Snapshot { get; set; } = "";
+  // public Etypes? Mediatype { get; set; }
+
+  const publish = async (snapShot, imrArr = []) => {
+    let formData = new FormData();
+    if (Platform.OS === "ios") {
+      formData.append("File", {
+        uri: "file://" + snapShot,
+        type: "image/jpeg",
+        name: "snapshot.jpg",
+      });
+      imrArr.forEach((item) => {
+        formData.append("File", {
+          uri: "file://" + item,
+          type: "image/jpeg",
+          name: `${Math.floor(Math.random() * 10000000000)}.jpg`,
+        });
+      });
+    } else {
+      formData.append("File", {
+        uri: snapShot,
+        type: "image/jpeg",
+        name: "snapshot.jpg",
+      });
+      imrArr.forEach((item) => {
+        formData.append("File", {
+          uri: item,
+          type: "image/jpeg",
+          name: `${Math.floor(Math.random() * 10000000000)}.jpg`,
+        });
+      });
+    }
+    formData.append("stock", stock);
+    frameColors.forEach((element) => {
+      formData.append("frameColors", element);
+    });
+    formData.append("Title", detailsFulltitle);
+    formData.append("description", detailsFull);
+    formData.append("Mediatype", 0);
+    setLoading(true);
+    mutate(
+      {
+        key: "Products",
+        data: formData,
+        method: "post",
+      },
+      {
+        onSuccess: (success) => {
+          setLoading(false);
+          show(success?.message, {
+            type: "normal",
+          });
+          navigation.navigate("Home");
+        },
+        onError: (err) => {
+          console.log(err);
+          setLoading(false);
+        },
+      }
+    );
+  };
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
@@ -93,7 +163,15 @@ const Cart = ({ navigation }) => {
       </View>
       <View style={{ marginTop: 40 }}>
         <CartEdit
-          {...{ image, setImage, frameColors, stock, capture, setCapture }}
+          {...{
+            image,
+            setImage,
+            frameColors,
+            stock,
+            capture,
+            setCapture,
+            publish,
+          }}
           details={detailsFull}
           price={editPrice}
           title={detailsFulltitle}
@@ -335,4 +413,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Cart;
+export default WithSpinner(Cart);

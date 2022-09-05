@@ -9,27 +9,31 @@ const baseUrl = getEnvVars().apiUrl;
 // axios.defaults.httpAgent=new https.Agent({
 //   rejectUnauthorized:false
 // })
-const rootApi = (hash) => {
+const rootApi = (hash, header) => {
   return axios.create({
     baseURL: baseUrl,
-    timeout: 3000,
+    // timeout: 10000,
     headers: {
       Accept: "application/json",
       Authorization: `token ${hash}`,
+      "content-type": header || "application/json",
     },
   });
 };
 
 export const useClientQuery = (key) => {
-  const { data, isError, isLoading } = useQuery(key, async () => {
+  const { data, isError, isLoading, refetch } = useQuery(key, async () => {
     const hash = (await AsyncGetItem("token")) || "";
-    return rootApi(hash)
-      .get("/")
+    return rootApi(hash, null)
+      .get("/" + key)
       .then((res) => res.data)
-      .catch((err) => { throw err.response.data});
+      .catch((err) => {
+        console.log("query error=", err);
+        throw err?.response?.data;
+      });
   });
 
-  return { data, isError, isLoading };
+  return { data, isError, isLoading, refetch };
 };
 
 // export const useClientMutation = (key, datas = {}, method) => {
@@ -46,10 +50,71 @@ export const useClientQuery = (key) => {
 export const useMutations = () => {
   const mutateFunction = async ({ key, method, data = {} }) => {
     const hash = (await AsyncGetItem("token")) || "";
-     return rootApi(hash)
+    console.log("mutate normal caled");
+    return rootApi(hash, null)
       [method?.toLowerCase()](`/${key}`, data)
       .then((res) => res.data)
-      .catch((err) => { throw err.response?.data});
+      .catch((err) => {
+        console.log("error=", err);
+        throw err?.response?.data;
+      });
+  };
+  const {
+    mutate: reactQueryMuate,
+    isError,
+    error,
+    isLoading,
+  } = useMutation(mutateFunction);
+
+  // useEffect(() => {
+  //   if (isError) {
+  //     // console.log(error.response);
+  //     // Handle mutation errors here
+  //     handleError(error);
+  //   }
+  // }, [isError, error]);
+
+  const mutate = (
+    { key, method, data },
+    { onSuccess = () => {}, onError = () => {}, onSettled = () => {} }
+  ) => {
+    reactQueryMuate(
+      { key, method, data },
+      {
+        onError,
+        onSettled,
+        onSuccess,
+      }
+    );
+  };
+  return { mutate, isLoading };
+};
+
+export const useUploadMutations = () => {
+  const mutateFunction = async ({ key, method, data = {} }) => {
+    console.log("mutate uplocaled");
+    const hash = (await AsyncGetItem("token")) || "";
+    // return rootApi(hash, "multipart/form-data")
+    //   [method?.toLowerCase()](`/${key}`, data)
+    //   .then((res) => res.data)
+    //   .catch((err) => {
+    //     console.log("error=", err);
+    //     throw err?.response?.data;
+    //   });
+
+    return axios
+      .post(baseUrl + "/" + "Products", data, {
+        headers: {
+          Accept: "application/json",
+          Authorization: `token ${hash}`,
+          "content-type": "multipart/form-data",
+        },
+      })
+      .then((res) => res.data)
+      .catch((err) => {
+        console.log(err.response);
+        return err?.response.data;
+      });
   };
   const {
     mutate: reactQueryMuate,

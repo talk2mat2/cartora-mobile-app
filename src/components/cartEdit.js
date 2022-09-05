@@ -27,6 +27,7 @@ const CartEdit = ({
   detailsPromo,
   capture,
   setCapture,
+  publish,
 }) => {
   const { colors, fonts } = useTheme();
   const ref = React.useRef();
@@ -46,14 +47,17 @@ const CartEdit = ({
       setImage(result.uri);
     }
   };
- 
 
-  const captureView = React.useCallback(() => {
+  const captureView = () => {
     ref.current.capture().then((uri) => {
       //we will upload the edited frame view for sharing to socialmedia
-      console.log("do something with ", uri);
+      // console.log("do something with ", uri);
+      // console.log(uri)
+      // return
+      publish(uri, [image]);
     });
-  },[]);
+  };
+  // }, []);
   React.useEffect(() => {
     if (capture === true) {
       captureView();
@@ -67,7 +71,6 @@ const CartEdit = ({
   // };
   return (
     <View>
-      <Avatar.Image style={styles.Avatar} />
       <View style={styles.statusBtn}>
         <ButtonC
           style={{
@@ -90,8 +93,12 @@ const CartEdit = ({
       <ViewShot
         // onCapture={onCapture}
         ref={ref}
-        options={{ format: "jpg", quality: 0.9 }}
+        options={{ format: "jpg", quality: 0.1 }}
       >
+        <Avatar.Image
+          style={styles.Avatar}
+          source={require("../../assets/avatar.png")}
+        />
         <LinearGradient
           start={[0, 1]}
           end={[1, 0]}

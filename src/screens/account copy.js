@@ -23,13 +23,10 @@ import { AntDesign } from "@expo/vector-icons";
 import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
-import { useSelector } from "react-redux";
 
 const Account = ({ navigation }) => {
   const { colors, fonts } = useTheme();
-  const user = useSelector(({ user }) => user.data);
 
- 
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
@@ -59,7 +56,7 @@ const Account = ({ navigation }) => {
         </TouchableNativeFeedback>
       </View>
       <View style={styles.header}>
-        <Avatar.Image source={require("../../assets/avatar.png")} />
+        <Avatar.Image />
         <View
           style={{
             flexDirection: "row",
@@ -117,9 +114,9 @@ const Account = ({ navigation }) => {
             paddingVertical: 5,
           }}
         >
-          {user?.brand} {"\n"}
+          Daren Store {"\n"}
           <Text style={{ ...fonts.small, fontWeight: "700", fontSize: 12 }}>
-            @{user?.userName}
+            @ darenstore
           </Text>
         </Text>
       </View>

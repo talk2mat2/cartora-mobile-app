@@ -40,7 +40,7 @@ const SignUp = ({ navigation, setLoading }) => {
   const subMitdata = (datas) => {
     mutate(
       {
-        key: "signup",
+        key: "Users/signup",
         method: "post",
         data: datas,
       },
