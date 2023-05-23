@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableNativeFeedback,
   TouchableHighlight,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme, Avatar } from "react-native-paper";
@@ -62,7 +63,7 @@ const SignIn = ({ navigation }) => {
         />
       </View>
       <View>
-        <TouchableHighlight>
+        <TouchableWithoutFeedback onPress={() => navigation.navigate("Signup")}>
           <Text
             style={{
               ...fonts.medium,
@@ -76,7 +77,7 @@ const SignIn = ({ navigation }) => {
           >
             Dont Have Account? Register
           </Text>
-        </TouchableHighlight>
+        </TouchableWithoutFeedback>
       </View>
     </View>
   );

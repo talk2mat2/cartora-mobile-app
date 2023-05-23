@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
+  TouchableOpacity,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme } from "react-native-paper";
@@ -21,12 +22,14 @@ import { useClientQuery, useMutations } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { appToast, sortByDateAsc } from "../components/Helpers";
 import { useSelector } from "react-redux";
+import { AntDesign } from "@expo/vector-icons";
+import UsersDiscoverItem from "../components/UsersdiscoverItem";
 
-const Discover = ({ navigation, setLoading }) => {
+const UserDiscover = ({ navigation, setLoading }) => {
   const { colors, fonts, font } = useTheme();
   const user = useSelector(({ user }) => user.data);
   const { data, isError, isLoading, refetch } = useClientQuery(
-    "Products?userId=" + user.id || "0"
+    `Products/getUserProducst/${user.id}`
   );
   const [updatedData, setUpdatedData] = React.useState([]);
   const { mutate } = useMutations();
@@ -43,7 +46,7 @@ const Discover = ({ navigation, setLoading }) => {
   }, [isLoading, data]);
   // console.log(data);
   const DeleteProducts = (id) => {
-    console.log(`Products/deleteProduct/${id}`);
+    // console.log(`Products/deleteProduct/${id}`);
 
     mutate(
       {
@@ -76,7 +79,14 @@ const Discover = ({ navigation, setLoading }) => {
   };
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body }}>
-      <Header navigation={navigation} />
+      <View>
+        <TouchableOpacity
+          style={{ width: 40 }}
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="left" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
       {isLoading && <ActivityIndicator size={50} style={styles.spinner} />}
       {/* <ScrollView style={{ backgroundColor: color.body, ...styles.content }}>
         {data?.data.length > 0 && data.data.map((item) => <DiscoverItem key={item.id} item={item}/>)}
@@ -87,7 +97,7 @@ const Discover = ({ navigation, setLoading }) => {
           refreshing={false}
           data={updatedData || []}
           renderItem={({ item, index }) => (
-            <DiscoverItem refetch={refetch}
+            <UsersDiscoverItem
               DeleteProducts={DeleteProducts}
               navigation={navigation}
               key={item.id}
@@ -132,10 +142,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     zIndex: 10,
     elevation: 10,
-
     alignSelf: "center",
     marginTop: "45%",
   },
 });
 
-export default WithSpinner(Discover);
+export default WithSpinner(UserDiscover);

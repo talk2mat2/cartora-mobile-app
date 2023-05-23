@@ -4,17 +4,18 @@ import { Platform } from "react-native";
 const ENV = {
   dev: {
     // apiUrl: "https://jsonplaceholder.typicode.com/todos",
-    apiUrl:"http://192.168.43.139:5262/api/v1",
+    apiUrl:"http://192.168.8.103:5262/api/v1",
     // apiUrl:"http://localhost:5262/api/v1",
     amplitudeApiKey: null,
   },
   staging: {
-    apiUrl: "https://uat.myapi.com/api",
+    apiUrl:"http://192.168.8.103:5262/api/v1",
     amplitudeApiKey: "[Enter your key here]",
+    
     // Add other keys you want here
   },
   prod: {
-    apiUrl: "https://prod.myapi.com/api",
+    apiUrl:"http://192.168.8.103:5262/api/v1",
     amplitudeApiKey: "[Enter your key here]",
     // Add other keys you want here
   },

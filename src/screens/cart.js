@@ -51,6 +51,7 @@ const Cart = ({ navigation, setLoading }) => {
   const [detailsPromo, setDetailsPromo] = useState("");
   const [detailsPromofull, setDetailsPromofull] = useState("");
   const [capture, setCapture] = useState(false);
+  const [captureCollection, setCaptureCollection] = useState(false);
   const [detailsFulltitle, setDetailsFulltitle] = useState("");
   const [detailstitle, setDetailstitle] = useState("");
   const showEditPrice = () => setShowPrice(true);
@@ -67,10 +68,19 @@ const Cart = ({ navigation, setLoading }) => {
   }, []);
   const ref = React.useRef();
   const handlePost = () => {
+    if (!image) return;
     if (!user.isLoggedIn) {
       show("you need to login to Post a cart :)");
     } else {
       setCapture(true);
+    }
+  };
+  const handlePostToCollection = () => {
+    if (!image) return;
+    if (!user.isLoggedIn) {
+      show("you need to login to save Collection :)");
+    } else {
+      setCaptureCollection(true);
     }
   };
 
@@ -116,7 +126,9 @@ const Cart = ({ navigation, setLoading }) => {
     });
     formData.append("Title", detailsFulltitle);
     formData.append("description", detailsFull);
+    formData.append("Price", editPrice);
     formData.append("Mediatype", 0);
+    console.log(detailsFulltitle)
     setLoading(true);
     mutate(
       {
@@ -139,6 +151,66 @@ const Cart = ({ navigation, setLoading }) => {
       }
     );
   };
+  const publishToCollection = async (snapShot, imrArr = []) => {
+    let formData = new FormData();
+    if (Platform.OS === "ios") {
+      formData.append("File", {
+        uri: "file://" + snapShot,
+        type: "image/jpeg",
+        name: "snapshot.jpg",
+      });
+      imrArr.forEach((item) => {
+        formData.append("File", {
+          uri: "file://" + item,
+          type: "image/jpeg",
+          name: `${Math.floor(Math.random() * 10000000000)}.jpg`,
+        });
+      });
+    } else {
+      formData.append("File", {
+        uri: snapShot,
+        type: "image/jpeg",
+        name: "snapshot.jpg",
+      });
+      imrArr.forEach((item) => {
+        formData.append("File", {
+          uri: item,
+          type: "image/jpeg",
+          name: `${Math.floor(Math.random() * 10000000000)}.jpg`,
+        });
+      });
+    }
+    formData.append("stock", stock);
+    frameColors.forEach((element) => {
+      formData.append("frameColors", element);
+    });
+    formData.append("Title", detailsFulltitle);
+    formData.append("description", detailsFull);
+    formData.append("Price", editPrice);
+    formData.append("iscollection", true);
+    formData.append("Mediatype", 0);
+    setLoading(true);
+    mutate(
+      {
+        key: "Products",
+        data: formData,
+        method: "post",
+      },
+      {
+        onSuccess: (success) => {
+          setLoading(false);
+          show("Collection saved", {
+            type: "normal",
+          });
+          navigation.navigate("Collections");
+        },
+        onError: (err) => {
+          console.log(err);
+          setLoading(false);
+        },
+      }
+    );
+  };
   return (
     <View style={styles.container}>
       <Header navigation={navigation} />
@@ -150,6 +222,7 @@ const Cart = ({ navigation, setLoading }) => {
               paddingHorizontal: 1,
               borderWidth: 0,
             }}
+            onPress={handlePostToCollection}
             textStyle={{ color: colors.primary, fontWeight: "700" }}
             title="+ ADD TO COLLECTION"
           />
@@ -171,6 +244,9 @@ const Cart = ({ navigation, setLoading }) => {
             capture,
             setCapture,
             publish,
+            setCaptureCollection,
+            captureCollection,
+            publishToCollection,
           }}
           details={detailsFull}
           price={editPrice}
@@ -330,11 +406,7 @@ const Cart = ({ navigation, setLoading }) => {
           title="SET STOCK"
           onPress={() => setStock(!stock)}
         />
-        <ButtonC
-          style={styles.editbtn}
-          textStyle={styles.editBtnTxt}
-          title="BRIGHTNESS"
-        />
+
         <ButtonC
           style={styles.editbtn}
           textStyle={styles.editBtnTxt}

@@ -1,11 +1,12 @@
 import axios from "axios";
 import { useQuery, useMutation } from "react-query";
 import { AsyncGetItem } from "../components/Helpers";
-import getEnvVars from "./env";
+// import getEnvVars from "./env";
 // import https from "https"
 
-const baseUrl = getEnvVars().apiUrl;
-
+// const baseUrl = getEnvVars().apiUrl;
+//const baseUrl = "http://www.cserver.somee.com/api/v1";
+ const baseUrl = "http://192.168.137.82:5262/api/v1";
 // axios.defaults.httpAgent=new https.Agent({
 //   rejectUnauthorized:false
 // })
@@ -50,7 +51,7 @@ export const useClientQuery = (key) => {
 export const useMutations = () => {
   const mutateFunction = async ({ key, method, data = {} }) => {
     const hash = (await AsyncGetItem("token")) || "";
-    console.log("mutate normal caled");
+    console.log("mutate normal caled",key);
     return rootApi(hash, null)
       [method?.toLowerCase()](`/${key}`, data)
       .then((res) => res.data)
@@ -103,7 +104,7 @@ export const useUploadMutations = () => {
     //   });
 
     return axios
-      .post(baseUrl + "/" + "Products", data, {
+      .post(baseUrl + "/" + key, data, {
         headers: {
           Accept: "application/json",
           Authorization: `token ${hash}`,
@@ -112,7 +113,7 @@ export const useUploadMutations = () => {
       })
       .then((res) => res.data)
       .catch((err) => {
-        console.log(err.response);
+        // console.log(err.response);
         return err?.response.data;
       });
   };

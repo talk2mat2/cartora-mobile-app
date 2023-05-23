@@ -39,3 +39,11 @@ export const appToast = () => {
     update,
   };
 };
+
+export function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+export function sortByDateAsc(a, b) {
+  return new Date(b.createdAt) - new Date(a.createdAt);
+}

@@ -67,14 +67,15 @@ const ColorModal = ({
                   fontSize: 20,
                   marginVertical: 10,
                   color: colors.secondary,
+                  marginBottom:14
                 }}
               >
-                Frame color gradient :
+                Frame color :
               </Text>
               <View
                 style={{ flexDirection: "row", justifyContent: "space-around" }}
               >
-                <View>
+                {/* <View>
                   <Text
                     style={{
                       ...fonts.medium,
@@ -88,8 +89,8 @@ const ColorModal = ({
                     status={checked === 1 ? "checked" : "unchecked"}
                     onPress={() => setChecked(1)}
                   />
-                </View>
-                <View>
+                </View> */}
+                {/* <View>
                   <Text
                     style={{
                       ...fonts.medium,
@@ -103,8 +104,8 @@ const ColorModal = ({
                     status={checked === 2 ? "checked" : "unchecked"}
                     onPress={() => setChecked(2)}
                   />
-                </View>
-                <View>
+                </View> */}
+                {/* <View>
                   <Text
                     style={{
                       ...fonts.medium,
@@ -118,8 +119,8 @@ const ColorModal = ({
                     status={checked === 3 ? "checked" : "unchecked"}
                     onPress={() => setChecked(3)}
                   />
-                </View>
-                <View>
+                </View> */}
+                {/* <View>
                   <Text
                     style={{
                       ...fonts.medium,
@@ -133,7 +134,7 @@ const ColorModal = ({
                     status={checked === 4 ? "checked" : "unchecked"}
                     onPress={() => setChecked(4)}
                   />
-                </View>
+                </View> */}
               </View>
             </View>
             <ScrollView
@@ -187,7 +188,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   modal1: {
-    height: 300,
+    height: 200,
 
     marginHorizontal: 20,
     borderRadius: 10,

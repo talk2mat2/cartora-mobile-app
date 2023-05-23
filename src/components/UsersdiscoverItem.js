@@ -9,7 +9,6 @@ import {
   Animated,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Platform,
 } from "react-native";
 import {
   useTheme,
@@ -28,10 +27,9 @@ import { AntDesign } from "@expo/vector-icons";
 import { useMutations } from "../services/api";
 import { useSelector } from "react-redux";
 import * as FileSystem from "expo-file-system";
-import ViewShot from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
 // import RNFetchBlob from 'rn-fetch-blob';
-const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
+const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
   const [visible, setVisible] = React.useState(false);
   const [learnMore, setLearnMore] = React.useState(false);
   const { colors, fonts } = useTheme();
@@ -42,7 +40,6 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
 
   const { mutate: knitmutate, isLoading: knitisloading } = useMutations();
   const openMenu = () => setVisible(true);
-  const ref = React.useRef();
   const _animation = new Animated.Value(0);
   const closeMenu = () => setVisible(false);
   // const handleknit = () => {
@@ -86,29 +83,23 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
   }, [learnMore]);
 
   const share = async (imageURL) => {
-    let newImageUrl;
-    if (Platform.OS === "ios") {
-      newImageUrl = "file://" + imageURL;
-    } else {
-      newImageUrl = imageURL;
-    }
     const options = {
       mimeType: "image/jpeg",
       dialogTitle: "Cartora- item",
       UTI: "image/jpeg",
     };
 
-    // await FileSystem.downloadAsync(imageURL, fileUri)
-    //   .then(({ uri }) => {
-    //     // setState(`Downloaded image to ${uri}`);
-    //   })
-    //   .catch((err) => {
-    //     alert("An error occured");
-    //     console.log(JSON.stringify(err));
-    //   });
+    await FileSystem.downloadAsync(imageURL, fileUri)
+      .then(({ uri }) => {
+        // setState(`Downloaded image to ${uri}`);
+      })
+      .catch((err) => {
+        alert("Error occured");
+        console.log(JSON.stringify(err));
+      });
 
     // Sharing only allows one to share a file.
-    Sharing.shareAsync(newImageUrl, options)
+    Sharing.shareAsync(fileUri, options)
       .then((data) => {
         // alert("Shared");
       })
@@ -117,24 +108,13 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
         console.log(JSON.stringify(err));
       });
   };
-
-  const captureView = () => {
-    ref.current.capture().then((uri) => {
-      //we will upload the edited frame view for sharing to socialmedia
-      // console.log("do something with ", uri);
-      // console.log(uri)
-      // return
-      // console.log(uri)
-      share(uri);
-    });
-  };
-
   const likeProducts = (datas) => {
     const payload = {
       productId: item?.id,
       userId: user?.id,
     };
     console.log(payload);
+
     mutate(
       {
         key: "Products/likeProduct",
@@ -220,20 +200,13 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
     <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
       <View style={{ ...styles.headerItem, backgroundColor: colors.body }}>
         <TouchableOpacity
-          style={{ width: "50%" }}
           onPress={() => {
+            console.log(navigation);
             navigation?.navigate("DetailView", { userId: item?.userId });
           }}
         >
           <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <Avatar.Image
-              source={
-                item?.user?.profileImage
-                  ? { uri: item?.user.profileImage }
-                  : require("../../assets/avatar.png")
-              }
-              size={40}
-            />
+            <Avatar.Image size={40} />
             <View style={{ marginLeft: 9, justifyContent: "center" }}>
               <Text
                 style={{
@@ -256,18 +229,7 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
           </View>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <ButtonC
-            onPress={handleknit.bind(this, item?.userId)}
-            style={{
-              paddingHorizontal: 20,
-              borderColor: colors.body3,
-              marginRight: 5,
-            }}
-            textStyle={{ fontSize: 13, fontWeight: "bold" }}
-            title={
-              knitisloading ? "..." : item?.isKnigted ? "Unknit" : "KNIT IT"
-            }
-          />
+      
 
           <Menu
             visible={visible}
@@ -290,35 +252,24 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
               titleStyle={{ ...fonts.small }}
               style={{ height: 40, backgroundColor: colors.body }}
               onPress={() => {
-                // captureView(item?.snapshot);
-                captureView();
+                share(item?.snapshot);
                 // console.log(item)
                 closeMenu();
               }}
               title="Share"
             />
 
-            <Menu.Item
+            {/* <Menu.Item
               titleStyle={{ ...fonts.small }}
               style={{ height: 40, backgroundColor: colors.body }}
               onPress={() => {
                 closeMenu();
-                setTimeout(() => {
-                  show("Item Reported");
-                }, 2000);
+         
               }}
-              title="Report"
-            />
+              title="Edit"
+            /> */}
 
-            <Menu.Item
-              titleStyle={{ ...fonts.small }}
-              style={{ height: 40, backgroundColor: colors.body }}
-              onPress={() => {
-                likeProducts();
-                closeMenu();
-              }}
-              title={item?.isLiked ? "Unlike" : "LiKe"}
-            />
+          
             {user?.id == item?.userId && (
               <Menu.Item
                 titleStyle={{ ...fonts.small }}
@@ -333,128 +284,113 @@ const DiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
           </Menu>
         </View>
       </View>
-      <ViewShot
-        style={{ backgroundColor: "#ffffff", borderRadius: 10 }}
-        ref={ref}
-        options={{ format: "jpg", quality: 1 }}
-      >
-        <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
-          {learnMore && (
-            <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
-              <Text style={{ ...fonts.small, color: colors.body }}>
-                CLICK TO LEARN MORE ON THIS PRODUCT
-              </Text>
-              <ButtonC
-                onPress={() => {
-                  Linking.openURL(devLink);
-                }}
-                style={{
-                  paddingHorizontal: 10,
-                  backgroundColor: colors.body,
-                  borderWidth: 0,
-                  marginTop: 9,
-                }}
-                title="LEARN MORE"
-              />
-            </Animated.View>
-          )}
-
-          <TouchableWithoutFeedback onPress={() => openOverlay()}>
-            <Image
-              style={styles.stock}
-              // source={require("../../assets/stock.png")}
-              source={{ uri: item?.snapshot || "" }}
-              snapshot
+      <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
+        {learnMore && (
+          <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
+            <Text style={{ ...fonts.small, color: colors.body }}>
+              CLICK TO LEARN MORE ON THIS PRODUCT
+            </Text>
+            <ButtonC
+              onPress={() => {
+                Linking.openURL(devLink);
+              }}
+              style={{
+                paddingHorizontal: 10,
+                backgroundColor: colors.body,
+                borderWidth: 0,
+                marginTop: 9,
+              }}
+              title="LEARN MORE"
             />
-          </TouchableWithoutFeedback>
-        </View>
-        <View style={{ ...styles.footerItem }}>
-          <View style={{ maxWidth: "60%", padding: 3 }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Text
-                style={{
-                  ...fonts.small,
-                  fontWeight: "700",
-                  fontSize: 16,
-                }}
-              >
-                N{item?.price ? numberWithCommas(item?.price) : ""}
-              </Text>
-              {item?.stock == true ? (
-                <Text
-                  style={{
-                    ...fonts.small,
-                    marginLeft: 20,
-                    fontSize: 13,
-                    color: colors.body4,
-                  }}
-                >
-                  in stock
-                </Text>
-              ) : (
-                <Text
-                  style={{
-                    ...fonts.small,
-                    marginLeft: 20,
-                    fontSize: 13,
-                    color: colors.primary,
-                  }}
-                >
-                  out of stock
-                </Text>
-              )}
+          </Animated.View>
+        )}
+
+        <TouchableWithoutFeedback onPress={() => openOverlay()}>
+          <Image
+            style={styles.stock}
+            // source={require("../../assets/stock.png")}
+            source={{ uri: item?.snapshot || "" }}
+            snapshot
+          />
+        </TouchableWithoutFeedback>
+      </View>
+      <View style={{ ...styles.footerItem }}>
+        <View style={{ maxWidth: "60%", padding: 3 }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Text
+              style={{
+                ...fonts.small,
+                fontWeight: "700",
+                fontSize: 16,
+              }}
+            >
+              N{item?.price ? numberWithCommas(item?.price) : ""}
+            </Text>
+            {item?.stock == true ? (
               <Text
                 style={{
                   ...fonts.small,
                   marginLeft: 20,
                   fontSize: 13,
+                  color: colors.body4,
                 }}
               >
-                {item?.likeCount || "0"} likes
+                in stock
               </Text>
-            </View>
-            <Text
-              style={{
-                ...fonts.small,
-                fontWeight: "bold",
-                fontSize: 14,
-              }}
-            >
-              {item?.title}
-            </Text>
-            <Text
-              ellipsizeMode="tail"
-              numberOfLines={4}
-              style={{
-                ...fonts.small,
-                fontWeight: "200",
-                fontSize: 13,
-              }}
-            >
-              {item?.description}
-            </Text>
+            ) : (
+              <Text
+                style={{
+                  ...fonts.small,
+                  marginLeft: 20,
+                  fontSize: 13,
+                  color: colors.primary,
+                }}
+              >
+                out of stock
+              </Text>
+            )}
           </View>
-
-          <ButtonC
-            onPress={() => {
-              Linking.openURL(devLink);
-            }}
+          <Text
             style={{
-              paddingHorizontal: 20,
-              borderColor: colors.body,
-              backgroundColor: colors.body4,
-              marginRight: 5,
-              paddingVertical: 5,
-            }}
-            textStyle={{
-              fontSize: 15,
+              ...fonts.small,
               fontWeight: "bold",
-              color: colors.textColor2,
+              fontSize: 14,
             }}
-            title="ORDER NOW"
-          />
+          >
+            {item?.title}
+          </Text>
+          <Text
+            ellipsizeMode="tail"
+            numberOfLines={4}
+            style={{
+              ...fonts.small,
+              fontWeight: "200",
+              fontSize: 13,
+            }}
+          >
+            {item?.description}
+          </Text>
         </View>
-      </ViewShot>
+{/* 
+        <ButtonC
+          onPress={() => {
+            Linking.openURL(devLink);
+          }}
+          style={{
+            paddingHorizontal: 20,
+            borderColor: colors.body,
+            backgroundColor: colors.body4,
+            marginRight: 5,
+            paddingVertical: 5,
+          }}
+          textStyle={{
+            fontSize: 15,
+            fontWeight: "bold",
+            color: colors.textColor2,
+          }}
+          title="ORDER NOW"
+        /> */}
+      </View>
     </View>
   );
 };
@@ -507,4 +443,4 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 });
-export default DiscoverItem;
+export default UsersDiscoverItem;

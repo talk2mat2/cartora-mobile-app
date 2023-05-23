@@ -15,6 +15,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import ButtonC from "./buttonc";
 import ViewShot from "react-native-view-shot";
+import { numberWithCommas } from "./Helpers";
+import { useSelector } from "react-redux";
 
 const CartEdit = ({
   details,
@@ -28,10 +30,13 @@ const CartEdit = ({
   capture,
   setCapture,
   publish,
+  setCaptureCollection,
+  captureCollection,
+  publishToCollection,
 }) => {
   const { colors, fonts } = useTheme();
   const ref = React.useRef();
-
+  const user = useSelector(({ user }) => user.data);
   const pickImage = async () => {
     // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -64,6 +69,22 @@ const CartEdit = ({
       setCapture(false);
     }
   }, [capture]);
+  const captureViewCollection = () => {
+    ref.current.capture().then((uri) => {
+      //we will upload the edited frame view for sharing to socialmedia
+      // console.log("do something with ", uri);
+      // console.log(uri)
+      // return
+      publishToCollection(uri, [image]);
+    });
+  };
+  // }, []);
+  React.useEffect(() => {
+    if (captureCollection === true) {
+      captureViewCollection();
+      setCaptureCollection(false);
+    }
+  }, [captureCollection]);
   // const handlePost = () => {
   //   ref.current.capture().then((uri) => {
   //     console.log("do something with ", uri);
@@ -93,14 +114,18 @@ const CartEdit = ({
       <ViewShot
         // onCapture={onCapture}
         ref={ref}
-        options={{ format: "jpg", quality: 0.1 }}
+        options={{ format: "jpg", quality: 0.6 }}
       >
         <Avatar.Image
           style={styles.Avatar}
-          source={require("../../assets/avatar.png")}
+          source={
+            user?.profileImage
+              ? { uri: user.profileImage }
+              : require("../../assets/avatar.png")
+          }
         />
         <LinearGradient
-          start={[0, 1]}
+          start={[1, 0]}
           end={[1, 0]}
           colors={frameColors}
           style={styles.container}
@@ -154,7 +179,7 @@ const CartEdit = ({
                   fontSize: 16,
                 }}
               >
-                N{price || " --,--"}
+                N{price ? numberWithCommas(price) : " --,--"}
               </Text>
               {!stock ? (
                 <Text

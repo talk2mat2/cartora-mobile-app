@@ -15,6 +15,7 @@ import { Formik } from "formik";
 import * as Yup from "yup";
 import WithSpinner from "../components/withspinner";
 import { useMutations } from "../services/api";
+import { appToast } from "../components/Helpers";
 
 const SignupSchema = Yup.object().shape({
   userName: Yup.string()
@@ -29,13 +30,22 @@ const SignupSchema = Yup.object().shape({
   password: Yup.string()
     .min(5, "password is too short")
     .max(80, "password is too long")
-    .required(),
-  country: Yup.string(),
+    .required("Required"),
+  password2: Yup.string()
+    .min(5, "password is too short")
+    .max(80, "password is too long")
+    .required("Required"),
+  phoneNo: Yup.string()
+    .min(11, "Invalid")
+    .max(11, "Invalid")
+    .required("Required"),
+  // country: Yup.string(),
 });
 
 const SignUp = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const { mutate } = useMutations();
+  const { show } = appToast();
 
   const subMitdata = (datas) => {
     mutate(
@@ -47,11 +57,14 @@ const SignUp = ({ navigation, setLoading }) => {
       {
         onSuccess: (res) => {
           setLoading(false);
-          alert(res?.message)
+          alert(res?.message);
+          setTimeout(() => {
+            navigation.navigate("Login")
+          }, 2000);
         },
         onError: (error) => {
           setLoading(false);
-         alert(error?.message)
+          alert(error?.message);
         },
       }
     );
@@ -68,9 +81,15 @@ const SignUp = ({ navigation, setLoading }) => {
           country: "",
           profileImage: "",
           password: "",
+          password2: "",
+          phoneNo:"",
         }}
         onSubmit={(values) => {
           Keyboard.dismiss();
+          if (values.password !== values.password2) {
+            show("Both password do not match");
+            return;
+          }
           subMitdata(values);
           setLoading(true);
         }}
@@ -124,6 +143,34 @@ const SignUp = ({ navigation, setLoading }) => {
                 visible={errors.password}
               >
                 {errors.password}
+              </HelperText>
+              <TextInputs
+                onChangeText={(txt) => setFieldValue("password2", txt)}
+                style={styles.input2}
+                value={values.password2}
+                placeholder="Confirm Password"
+                secureTextEntry={true}
+              />
+              <HelperText
+                style={styles.helperText}
+                type="error"
+                visible={errors.password2}
+              >
+                {errors.password2}
+              </HelperText>
+              <TextInputs
+                onChangeText={(txt) => setFieldValue("phoneNo", txt)}
+                style={styles.input2}
+                value={values.phoneNo}
+                placeholder="Phone Number"
+                // secureTextEntry={true}
+              />
+              <HelperText
+                style={styles.helperText}
+                type="error"
+                visible={errors.phoneNo}
+              >
+                {errors.phoneNo}
               </HelperText>
               <TextInputs
                 onChangeText={(txt) => setFieldValue("userName", txt)}

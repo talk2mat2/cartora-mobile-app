@@ -9,6 +9,7 @@ import Welcome from "../screens/welcome";
 import SuccessVerify from "../screens/successVerify";
 import NewPassword from "../screens/newPassword";
 import Discover from "../screens/discover";
+import UserDiscover from "../screens/userdiscover";
 import { View } from "react-native";
 import MyTabBar from "./tabbar";
 import Account from "../screens/account";
@@ -19,6 +20,9 @@ import SignIn from "../screens/signin";
 import { useSelector } from "react-redux";
 import { AsyncGetItem } from "./Helpers";
 import Search from "../screens/search";
+import DetailView from "../screens/detailview";
+import Profile from "../screens/profile";
+import editprofile from "../screens/editprofile";
 
 const HomeScreen = () => {
   const user = useSelector(({ user }) => user);
@@ -49,18 +53,23 @@ const Main = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!user.onBoarded && <Stack.Screen name="Welcome" component={Welcome} />}
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="DetailView" component={DetailView} />
+        <Stack.Screen name="UserDiscover" component={UserDiscover} />
         {!isLoggedIn && (
           <>
             <Stack.Screen name="Login" component={Login} />
             <Stack.Screen name="Signup" component={SignUp} />
+
             <Stack.Screen name="NewPassword" component={NewPassword} />
             <Stack.Screen name="SuccessVerify" component={SuccessVerify} />
           </>
         )}
         {isLoggedIn && (
           <>
+            <Stack.Screen name="Profile" component={Profile} />
             <Stack.Screen name="Search" component={Search} />
             <Stack.Screen name="settings" component={Settings} />
+            <Stack.Screen name="EditProfile" component={editprofile} />
           </>
         )}
       </Stack.Navigator>

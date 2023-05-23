@@ -7,6 +7,7 @@ import {
   Image,
   FlatList,
   TouchableNativeFeedback,
+  TouchableOpacity,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme, Avatar } from "react-native-paper";
@@ -23,13 +24,43 @@ import { AntDesign } from "@expo/vector-icons";
 import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
+import { useClientQuery } from "../services/api";
+import WithSpinner from "../components/withspinner";
+import Spinner from "../components/spinner";
+import DetailItem from "../components/DetailItem";
 
-const Account = ({ navigation }) => {
+const DetailView = ({ navigation, route }) => {
   const { colors, fonts } = useTheme();
+  const { userId } = route?.params;
+  const { data, isError, isLoading, refetch } = useClientQuery(
+    `Users/${userId}`
+  );
+  const {
+    data: knitData,
+    isError: kintError,
+    isLoading: knitIsloadibg,
+  } = useClientQuery(`Users/fetchKniters/${userId}`);
 
+  const {
+    data: userProduct,
+    isError: isErrorProduct,
+    isLoading: isLoadingProducts,
+    refetch: refetchProduct,
+  } = useClientQuery(`Products/getUserProducst/${userId}`);
+  // React.useEffect(() => {
+  //   // console.log(data);
+  // }, [isLoading]);
+  
   return (
     <View style={styles.container}>
-      <Header navigation={navigation} />
+      <View>
+        <TouchableOpacity
+          style={{ width: 40 }}
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="left" size={30} color="black" />
+        </TouchableOpacity>
+      </View>
       <View
         style={{
           flexDirection: "row",
@@ -49,14 +80,16 @@ const Account = ({ navigation }) => {
         >
           Profile
         </Text> */}
-        <TouchableNativeFeedback
-          onPress={() => navigation.navigate("settings")}
-        >
-          <AntDesign name="setting" size={24} />
-        </TouchableNativeFeedback>
       </View>
+
       <View style={styles.header}>
-        <Avatar.Image />
+        <Avatar.Image
+          source={
+            data?.data?.[0]?.profileImage
+              ? { uri: data?.data?.[0]?.profileImage }
+              : require("../../assets/avatar.png")
+          }
+        />
         <View
           style={{
             flexDirection: "row",
@@ -72,7 +105,8 @@ const Account = ({ navigation }) => {
                 fontSize: 16,
               }}
             >
-              1000{"\n"}
+              {userProduct?.data?.length || 0}
+              {"\n"}
               <Text style={styles.sub}>products</Text>
             </Text>
           </View>
@@ -84,7 +118,8 @@ const Account = ({ navigation }) => {
                 fontSize: 16,
               }}
             >
-              1000{"\n"}
+              {knitData?.data?.[0]?.knited || 0}
+              {"\n"}
               <Text style={styles.sub}>Knitted</Text>
             </Text>
           </View>
@@ -96,7 +131,8 @@ const Account = ({ navigation }) => {
                 fontSize: 16,
               }}
             >
-              1000{"\n"}
+              {knitData?.data?.[0]?.kniters || 0}
+              {"\n"}
               <Text style={styles.sub}>knitters</Text>
             </Text>
           </View>
@@ -114,9 +150,9 @@ const Account = ({ navigation }) => {
             paddingVertical: 5,
           }}
         >
-          Daren Store {"\n"}
+          {data?.data?.[0]?.brand} {"\n"}
           <Text style={{ ...fonts.small, fontWeight: "700", fontSize: 12 }}>
-            @ darenstore
+            {data?.data?.[0]?.userName && `@${data?.data?.[0]?.userName}`}
           </Text>
         </Text>
       </View>
@@ -129,8 +165,7 @@ const Account = ({ navigation }) => {
             paddingLeft: 10,
           }}
         >
-          We help to satisfy your cravings for special delicacies, sandwiches,
-          chicken, smoothies
+          {data?.data?.[0]?.aboutMe || ""}
         </Text>
       </View>
       <View style={styles.tabssection}>
@@ -151,14 +186,18 @@ const Account = ({ navigation }) => {
             <View style={{ flex: 1, alignItems: "center" }}>
               <FlatList
                 numColumns={2}
+                onRefresh={refetch}
+                refreshing={isLoading}
                 contentContainerStyle={{ justifyContent: "center" }}
                 style={{
                   flexWrap: "wrap",
                   display: "flex",
                   width: "100%",
                 }}
-                data={[1, 2, 3, 4, 5]}
-                renderItem={(item) => <ProfileItem />}
+                data={userProduct?.data || []}
+                renderItem={(item) => (
+                  <DetailItem navigation={navigation} item={item} />
+                )}
                 keyExtractor={(data, index) => index}
               />
             </View>
@@ -210,6 +249,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: color.body,
     padding: design.padding1,
+    paddingHorizontal: 3,
   },
   tinyLogo: {
     height: 170,
@@ -217,4 +257,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Account;
+export default WithSpinner(DetailView);

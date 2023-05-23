@@ -1,56 +1,79 @@
 import React from "react";
-import { View, StyleSheet, Text, Image, Dimensions } from "react-native";
+import { View, StyleSheet, Text, Image, Dimensions, TouchableWithoutFeedback } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import EntypoIcons from "@expo/vector-icons/Entypo";
 import ButtonC from "./buttonc";
-const ProfileItem = () => {
+import { numberWithCommas } from "./Helpers";
+const ProfileItem = ({ item ,navigation}) => {
   const { colors, fonts } = useTheme();
 
   return (
-    <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
-      <View style={{ width: "100%", aspectRatio: 1 }}>
-        <Image
-          style={styles.stock}
-          source={require("../../assets/stock.png")}
-        />
-      </View>
-      <View style={{ ...styles.footerItem }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <View>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
+    <TouchableWithoutFeedback
+      onPress={() => navigation?.navigate("UserDiscover")}
+    >
+      <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
+        <View style={{ width: "100%", aspectRatio: 1 }}>
+          <Image style={styles.stock} source={{ uri: item?.item?.snapshot }} />
+        </View>
+        <View style={{ ...styles.footerItem }}>
+          <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <View>
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Text
+                  style={{
+                    ...fonts.small,
+                    fontWeight: "700",
+                    fontSize: 16,
+                  }}
+                >
+                  N
+                  {item?.item?.price ? numberWithCommas(item?.item?.price) : ""}
+                </Text>
+                {item?.item?.stock == true ? (
+                  <Text
+                    style={{
+                      ...fonts.small,
+                      marginLeft: 20,
+                      fontSize: 13,
+                      color: colors.body4,
+                    }}
+                  >
+                    in stock
+                  </Text>
+                ) : (
+                  <Text
+                    style={{
+                      ...fonts.small,
+                      marginLeft: 20,
+                      fontSize: 13,
+                      color: colors.primary,
+                    }}
+                  >
+                    out of stock
+                  </Text>
+                )}
+              </View>
               <Text
                 style={{
                   ...fonts.small,
-                  fontWeight: "700",
-                  fontSize: 16,
+                  fontWeight: "bold",
+                  fontSize: 14,
                 }}
               >
-                N12,000
+                {item?.item?.title}
               </Text>
               <Text
                 style={{
                   ...fonts.small,
-                  marginLeft: 20,
+                  fontWeight: "200",
                   fontSize: 13,
-                  color: colors.body4,
                 }}
               >
-                in stock
+                {item?.item?.description}
               </Text>
             </View>
-            <Text
-              style={{
-                ...fonts.small,
-                fontWeight: "200",
-                fontSize: 13,
-              }}
-            >
-              Grilled Parfait with colourful spices{"\n"}
-              lorem ipsim
-            </Text>
           </View>
-        </View>
-        {/* <ButtonC
+          {/* <ButtonC
           style={{
             paddingHorizontal: 20,
             borderColor: colors.body,
@@ -65,8 +88,9 @@ const ProfileItem = () => {
           }}
           title="ORDER NOW"
         /> */}
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({
@@ -97,7 +121,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 5,
     paddingBottom: 5,
-    margin:1
+    margin: 1,
   },
 
   stock: {
