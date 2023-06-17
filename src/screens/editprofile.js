@@ -8,6 +8,8 @@ import {
   FlatList,
   TouchableNativeFeedback,
   TouchableOpacity,
+  ScrollView,
+  Keyboard,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme, Avatar } from "react-native-paper";
@@ -23,19 +25,111 @@ import TextInputs from "../components/textInput";
 import { AntDesign } from "@expo/vector-icons";
 import { Formik } from "formik";
 import Header from "../components/header";
+import * as ImagePicker from "expo-image-picker";
 import ProfileItem from "../components/ProfileItem";
-import { useClientQuery } from "../services/api";
+import {
+  useClientQuery,
+  useMutations,
+  useUploadMutations,
+} from "../services/api";
 import WithSpinner from "../components/withspinner";
 import Spinner from "../components/spinner";
 import DetailItem from "../components/DetailItem";
+import { useDispatch, useSelector } from "react-redux";
+import { appToast } from "../components/Helpers";
+import { logIn } from "../redux/reducers/usersSlice";
 
-const EditProfile = ({ navigation, route }) => {
+const EditProfile = ({ navigation, route, setLoading }) => {
   const { colors, fonts } = useTheme();
-
+  const { show } = appToast();
+  const user = useSelector(({ user }) => user.data);
+  const { mutate } = useMutations();
+  const [image, setImage] = React.useState(null);
+  const dispatch = useDispatch();
+  const [initialValues, setInitialValues] = React.useState({});
+  const { mutate: mutateUpload } = useUploadMutations();
   // React.useEffect(() => {
   //   // console.log(data);
   // }, [isLoading]);
 
+  const uploadprofile = async (Image) => {
+    let formData = new FormData();
+    formData.append("File", {
+      uri: Image?.uri,
+      type: "image/jpeg",
+      name: `${Math.floor(Math.random() * 10000000000)}.jpg`,
+    });
+    // setLoading(true);
+
+    console.log("url is", Image?.uri);
+
+    mutateUpload(
+      {
+        key: "Products/uploadprofile",
+        data: formData,
+        method: "post",
+      },
+      {
+        onSuccess: (success) => {
+          setLoading(false);
+          console.log(success?.data[0]);
+          show(success?.message, {
+            type: "normal",
+          });
+          dispatch(logIn(success.data[0]));
+        },
+        onError: (err) => {
+          console.log(err);
+          setLoading(false);
+        },
+      }
+    );
+  };
+  const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 0.5,
+    });
+
+    console.log(result);
+
+    if (!result.cancelled) {
+      uploadprofile(result);
+      setImage(result.uri);
+    }
+  };
+  const subMitdata = (datas) => {
+    // console.log(datas)
+    mutate(
+      {
+        key: "Users/UpdateUserProfile",
+        method: "post",
+        data: datas,
+      },
+      {
+        onSuccess: (res) => {
+          setLoading(false);
+          show(res?.message, {
+            type: "normal",
+          });
+          // console.log(res.data?.[0])
+          dispatch(logIn(res.data[0]));
+          console.log(res?.data);
+          // AsyncSave("token", res?.data?.[0]?.token);
+        },
+        onError: (error) => {
+          setLoading(false);
+          show(error?.message);
+        },
+      }
+    );
+  };
+
+
+ 
   return (
     <View style={styles.container}>
       <View
@@ -65,72 +159,147 @@ const EditProfile = ({ navigation, route }) => {
           Edit Profile
         </Text>
       </View>
-      <View style={{ marginTop: "10%", paddingHorizontal: 10 }}>
-        <View style={styles.itemList}>
-          <Text
-            style={{
-              ...fonts.small,
+      <Formik
+        // validationSchema={{}}
+        initialValues={{
+          // email: user?.email || "",
+          userName: user?.userName || "",
+          brand: user?.brand || "",
+          phoneNo: user?.phoneNo || "",
+        }}
+        onSubmit={(values) => {
+          subMitdata(values);
+          setLoading(true);
+          Keyboard.dismiss();
+        }}
+      >
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          setFieldValue,
+        }) => (
+          <ScrollView>
+            <View style={{ marginTop: "6%", paddingHorizontal: 10 }}>
+              <View
+                style={{
+                  alignItems: "center",
+                  marginBottom: "25%",
+                  position: "relative",
+                }}
+              >
+                <Avatar.Image
+                  size={150}
+                  source={
+                    user?.profileImage
+                      ? { uri: user.profileImage }
+                      : require("../../assets/avatar.png")
+                  }
+                />
+                <TouchableNativeFeedback onPress={pickImage}>
+                  <AntDesign
+                    style={{ position: "absolute", bottom: -10, right: "25%" }}
+                    name="edit"
+                    size={24}
+                  />
+                </TouchableNativeFeedback>
+              </View>
 
-              fontSize: 16,
-            }}
-          >
-            Brand Name
-          </Text>
-          <TextInput style={styles.inputItem} value="testing" />
-        </View>
-        <View style={styles.itemList}>
-          <Text
-            style={{
-              ...fonts.small,
-              fontSize: 16,
-            }}
-          >
-            UserName
-          </Text>
-          <TextInput style={styles.inputItem} value="tesg" />
-        </View>
-        <View style={styles.itemList}>
-          <Text
-            style={{
-              ...fonts.small,
+              <View style={styles.itemList}>
+                <Text
+                  style={{
+                    ...fonts.small,
 
-              fontSize: 16,
-            }}
-          >
-            Email
-          </Text>
-          <Text
-            style={{
-              ...fonts.small,
-              ...styles.inputItem,
+                    fontSize: 16,
+                  }}
+                >
+                  Brand Name
+                </Text>
+                <TextInput
+                  style={styles.inputItem}
+                  onChangeText={(xx) => setFieldValue("brand", xx)}
+                  value={values.brand}
+                />
+              </View>
+              <View style={styles.itemList}>
+                <Text
+                  style={{
+                    ...fonts.small,
+                    fontSize: 16,
+                  }}
+                >
+                  UserName
+                </Text>
+                <TextInput
+                  style={styles.inputItem}
+                  onChangeText={(xx) => setFieldValue("userName", xx)}
+                  value={values.userName}
+                />
+              </View>
+              <View style={styles.itemList}>
+                <Text
+                  style={{
+                    ...fonts.small,
 
-              fontSize: 16,
-            }}
-          >
-            Tal2k2mat2@yahoo.dom"
-          </Text>
-        </View>
-        <View style={styles.itemList}>
-          <Text
-            style={{
-              ...fonts.small,
+                    fontSize: 16,
+                  }}
+                >
+                  Email
+                </Text>
+                <Text
+                  style={{
+                    ...fonts.small,
+                    ...styles.inputItem,
 
-              fontSize: 16,
-            }}
-          >
-            PhoneNumber
-          </Text>
-          <TextInput
-            style={{
-              ...fonts.small,
-              ...styles.inputItem,
+                    fontSize: 16,
+                  }}
+                >
+                  {user?.email}
+                </Text>
+              </View>
+              <View style={styles.itemList}>
+                <Text
+                  style={{
+                    ...fonts.small,
 
-              fontSize: 16,
-            }}
-            value=" 09045367825"
-          />
-        </View>
-      </View>
+                    fontSize: 16,
+                  }}
+                >
+                  PhoneNumber
+                </Text>
+                <TextInput
+                  onChangeText={(xx) => setFieldValue("phoneNo", xx)}
+                  style={{
+                    ...fonts.small,
+                    ...styles.inputItem,
+
+                    fontSize: 16,
+                  }}
+                  value={values.phoneNo}
+                />
+              </View>
+              <View
+                style={{
+                  alignItems: "center",
+                  marginTop: "35%",
+                  marginBottom: "20%",
+                }}
+              >
+                {(values?.brand && values?.email && !values.phoneNo) ||
+                  (values?.userName && (
+                    <ButtonC
+                      onPress={handleSubmit}
+                      style={{ width: 110 }}
+                      title="Update"
+                    />
+                  ))}
+              </View>
+            </View>
+          </ScrollView>
+        )}
+      </Formik>
     </View>
   );
 };

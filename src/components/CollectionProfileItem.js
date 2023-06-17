@@ -1,5 +1,4 @@
 import React from "react";
-import { debounce } from "lodash";
 import {
   View,
   StyleSheet,
@@ -7,82 +6,31 @@ import {
   Image,
   Dimensions,
   TouchableWithoutFeedback,
-  Animated,
-  Linking,
 } from "react-native";
 import { useTheme, Avatar } from "react-native-paper";
 import EntypoIcons from "@expo/vector-icons/Entypo";
+import { AntDesign } from "@expo/vector-icons";
 import ButtonC from "./buttonc";
 import { numberWithCommas } from "./Helpers";
-const DetailItem = ({ item, navigation }) => {
+const ProfileItem = ({
+  item,
+  navigation,
+  handleShow,
+  handleDelete = () => {},
+}) => {
   const { colors, fonts } = useTheme();
-  const [learnMore, setLearnMore] = React.useState(false);
-  const _animation = new Animated.Value(0);
-  const closeOverlay = debounce(() => {
-    setLearnMore(false);
-  }, 5000);
-
-  const openOverlay = () => {
-    setLearnMore(true);
-    console.log("called");
-  };
-  const animatedStyle = {
-    opacity: _animation,
-  };
-
-  const devLink = "http://api.whatsapp.com/send?phone=234$9051322343";
-  React.useEffect(() => {
-    if (learnMore) {
-      Animated.timing(_animation, {
-        toValue: 0.7,
-        duration: 700,
-        useNativeDriver: false,
-      }).start();
-    }
-    learnMore && closeOverlay();
-  }, [learnMore]);
 
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
-      <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
-        {learnMore && (
-          <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
-            <Text style={{ ...fonts.small, color: colors.body, fontSize: 10 }}>
-              CLICK TO LEARN MORE ON THIS PRODUCT
-            </Text>
-            <ButtonC
-              onPress={() => {
-                Linking.openURL(devLink);
-              }}
-              style={{
-                paddingHorizontal: 10,
-                backgroundColor: colors.body,
-                borderWidth: 0,
-                marginTop: 9,
-              }}
-              textStyle={{ fontSize: 13 }}
-              title="LEARN MORE"
-            />
-          </Animated.View>
-        )}
-        {/* 
-        <TouchableWithoutFeedback onPress={() => openOverlay()}>
-          <Image
-            style={styles.stock}
-            // source={require("../../assets/stock.png")}
-            source={{ uri: item?.snapshot || "" }}
-            snapshot
-          />
-        </TouchableWithoutFeedback> */}
-        <TouchableWithoutFeedback onPress={() => openOverlay()}>
-          <View style={{ width: "100%", aspectRatio: 1 }}>
-            <Image
-              style={styles.stock}
-              source={{ uri: item?.item?.snapshot }}
-            />
-          </View>
-        </TouchableWithoutFeedback>
-      </View>
+      <TouchableWithoutFeedback
+        // onPress={() => navigation?.navigate("UserDiscover")}
+        onPress={() => navigation?.navigate("EditCart", { item: item?.item })}
+        // onPress={() => handleShow(item?.item)}
+      >
+        <View style={{ width: "100%", aspectRatio: 1 }}>
+          <Image style={styles.stock} source={{ uri: item?.item?.snapshot }} />
+        </View>
+      </TouchableWithoutFeedback>
       <View style={{ ...styles.footerItem }}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <View>
@@ -155,20 +103,16 @@ const DetailItem = ({ item, navigation }) => {
           }}
           title="ORDER NOW"
         /> */}
+        <AntDesign
+          onPress={() => handleDelete(item?.item?.id)}
+          name="delete"
+          size={24}
+        />
       </View>
     </View>
   );
 };
 const styles = StyleSheet.create({
-  overLay: {
-    position: "absolute",
-    height: "100%",
-    width: "100%",
-    backgroundColor: "rgb(0,0,0)",
-    zIndex: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   footerItem: {
     marginTop: "auto",
     minHeight: 20,
@@ -206,4 +150,4 @@ const styles = StyleSheet.create({
     height: "100%",
   },
 });
-export default DetailItem;
+export default ProfileItem;

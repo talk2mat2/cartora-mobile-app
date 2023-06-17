@@ -50,7 +50,7 @@ const DetailView = ({ navigation, route }) => {
   // React.useEffect(() => {
   //   // console.log(data);
   // }, [isLoading]);
-  
+
   return (
     <View style={styles.container}>
       <View>
@@ -110,32 +110,40 @@ const DetailView = ({ navigation, route }) => {
               <Text style={styles.sub}>products</Text>
             </Text>
           </View>
-          <View style={{ alignItems: "center" }}>
-            <Text
-              style={{
-                ...fonts.small,
-                textAlign: "center",
-                fontSize: 16,
-              }}
-            >
-              {knitData?.data?.[0]?.knited || 0}
-              {"\n"}
-              <Text style={styles.sub}>Knitted</Text>
-            </Text>
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <Text
-              style={{
-                ...fonts.small,
-                textAlign: "center",
-                fontSize: 16,
-              }}
-            >
-              {knitData?.data?.[0]?.kniters || 0}
-              {"\n"}
-              <Text style={styles.sub}>knitters</Text>
-            </Text>
-          </View>
+          <TouchableNativeFeedback
+            onPress={() => navigation?.navigate("KnittedList", { userId })}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Text
+                style={{
+                  ...fonts.small,
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                {knitData?.data?.[0]?.knited || 0}
+                {"\n"}
+                <Text style={styles.sub}>Knitted</Text>
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
+          <TouchableNativeFeedback
+            onPress={() => navigation?.navigate("KnittersList", { userId })}
+          >
+            <View style={{ alignItems: "center" }}>
+              <Text
+                style={{
+                  ...fonts.small,
+                  textAlign: "center",
+                  fontSize: 16,
+                }}
+              >
+                {knitData?.data?.[0]?.kniters || 0}
+                {"\n"}
+                <Text style={styles.sub}>knitters</Text>
+              </Text>
+            </View>
+          </TouchableNativeFeedback>
         </View>
       </View>
       <View

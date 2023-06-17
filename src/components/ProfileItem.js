@@ -1,14 +1,23 @@
 import React from "react";
-import { View, StyleSheet, Text, Image, Dimensions, TouchableWithoutFeedback } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Image,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 import { useTheme, Avatar } from "react-native-paper";
 import EntypoIcons from "@expo/vector-icons/Entypo";
 import ButtonC from "./buttonc";
 import { numberWithCommas } from "./Helpers";
-const ProfileItem = ({ item ,navigation}) => {
+const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
   const { colors, fonts } = useTheme();
 
   return (
     <TouchableWithoutFeedback
+      // onPress={() => navigation?.navigate("UserDiscover")}
       onPress={() => navigation?.navigate("UserDiscover")}
     >
       <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
@@ -88,6 +97,11 @@ const ProfileItem = ({ item ,navigation}) => {
           }}
           title="ORDER NOW"
         /> */}
+          <AntDesign
+            onPress={() => handleDelete(item?.item?.id)}
+            name="delete"
+            size={24}
+          />
         </View>
       </View>
     </TouchableWithoutFeedback>

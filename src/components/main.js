@@ -23,6 +23,10 @@ import Search from "../screens/search";
 import DetailView from "../screens/detailview";
 import Profile from "../screens/profile";
 import editprofile from "../screens/editprofile";
+import knittersList from "../screens/knittersList";
+import knittedList from "../screens/knittedList";
+import Editcart from "../screens/editcart";
+import privacypolicy from "../screens/privacypolicy";
 
 const HomeScreen = () => {
   const user = useSelector(({ user }) => user);
@@ -36,6 +40,7 @@ const HomeScreen = () => {
     >
       <Tab.Screen name="Home" component={Discover} />
       <Tab.Screen name="Add Cart" component={Cart} />
+
       <Tab.Screen name="Collections" component={Collections} />
       {/* <Tab.Screen name="Account" component={Account} /> */}
       <Tab.Screen name="Account" component={!isLoggedIn ? SignIn : Account} />
@@ -54,6 +59,10 @@ const Main = () => {
         {!user.onBoarded && <Stack.Screen name="Welcome" component={Welcome} />}
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="DetailView" component={DetailView} />
+        <Stack.Screen name="EditCart" component={Editcart} />
+        <Stack.Screen name="KnittersList" component={knittersList} />
+        <Stack.Screen name="KnittedList" component={knittedList} />
+        <Stack.Screen name="PrivacyPolicy" component={privacypolicy} />
         <Stack.Screen name="UserDiscover" component={UserDiscover} />
         {!isLoggedIn && (
           <>

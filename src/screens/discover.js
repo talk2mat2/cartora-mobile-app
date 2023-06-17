@@ -26,7 +26,7 @@ const Discover = ({ navigation, setLoading }) => {
   const { colors, fonts, font } = useTheme();
   const user = useSelector(({ user }) => user.data);
   const { data, isError, isLoading, refetch } = useClientQuery(
-    "Products?userId=" + user.id || "0"
+    "Products?userId=" + user?.id || "0"
   );
   const [updatedData, setUpdatedData] = React.useState([]);
   const { mutate } = useMutations();

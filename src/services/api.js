@@ -1,12 +1,15 @@
 import axios from "axios";
+import React from "react";
 import { useQuery, useMutation } from "react-query";
+import { useDispatch } from "react-redux";
 import { AsyncGetItem } from "../components/Helpers";
+import { logOut } from "../redux/reducers/usersSlice";
 // import getEnvVars from "./env";
 // import https from "https"
 
 // const baseUrl = getEnvVars().apiUrl;
 //const baseUrl = "http://www.cserver.somee.com/api/v1";
- const baseUrl = "http://192.168.137.82:5262/api/v1";
+const baseUrl = "http://192.168.8.103:5262/api/v1";
 // axios.defaults.httpAgent=new https.Agent({
 //   rejectUnauthorized:false
 // })
@@ -23,17 +26,31 @@ const rootApi = (hash, header) => {
 };
 
 export const useClientQuery = (key) => {
-  const { data, isError, isLoading, refetch } = useQuery(key, async () => {
+  const { data, isError, isLoading, refetch ,error} = useQuery(key, async () => {
     const hash = (await AsyncGetItem("token")) || "";
     return rootApi(hash, null)
       .get("/" + key)
       .then((res) => res.data)
       .catch((err) => {
         console.log("query error=", err);
+        err.response.data.statusCode = err.response?.status;
         throw err?.response?.data;
       });
   });
-
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
+  React.useEffect(() => {
+    if (isError) {
+      console.log(error?.statusCode, "response");
+      if (error?.statusCode == "401") {
+        alert("session expired");
+        setTimeout(handleLogout, 3000);
+      }
+      // Handle mutation errors here
+    }
+  }, [isError, error]);
   return { data, isError, isLoading, refetch };
 };
 
@@ -51,12 +68,14 @@ export const useClientQuery = (key) => {
 export const useMutations = () => {
   const mutateFunction = async ({ key, method, data = {} }) => {
     const hash = (await AsyncGetItem("token")) || "";
-    console.log("mutate normal caled",key);
+    console.log("mutate normal caled", key);
     return rootApi(hash, null)
       [method?.toLowerCase()](`/${key}`, data)
       .then((res) => res.data)
       .catch((err) => {
         console.log("error=", err);
+
+        err.response.data.statusCode = err.response?.status;
         throw err?.response?.data;
       });
   };
@@ -66,14 +85,20 @@ export const useMutations = () => {
     error,
     isLoading,
   } = useMutation(mutateFunction);
-
-  // useEffect(() => {
-  //   if (isError) {
-  //     // console.log(error.response);
-  //     // Handle mutation errors here
-  //     handleError(error);
-  //   }
-  // }, [isError, error]);
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
+  React.useEffect(() => {
+    if (isError) {
+      console.log(error?.statusCode, "response");
+      if (error?.statusCode == "401") {
+        alert("session expired");
+        setTimeout(handleLogout, 3000);
+      }
+      // Handle mutation errors here
+    }
+  }, [isError, error]);
 
   const mutate = (
     { key, method, data },

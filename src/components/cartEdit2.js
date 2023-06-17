@@ -65,7 +65,7 @@ const CartEdit = ({
       publish(uri, [image]);
     });
   };
-captureViewCollection  // }, []);
+  captureViewCollection; // }, []);
   React.useEffect(() => {
     if (capture === true) {
       captureView();
@@ -73,11 +73,8 @@ captureViewCollection  // }, []);
     }
   }, [capture]);
   const captureViewCollection = () => {
-    ref.current.capture().then((uri) => {
-      //we will upload the edited frame view for sharing to socialmedia
-      // console.log("do something with ", uri);
-      // console.log(uri)
-      // return
+    ref.current.capture().then(async (uri) => {
+   
       publishToCollection(uri, [image]);
     });
   };
@@ -137,7 +134,14 @@ captureViewCollection  // }, []);
           <View
             style={{ ...styles.imageContainer, backgroundColor: colors.body }}
           >
-            <View style={{ ...styles.add }}>
+            <ViewShot
+              // onCapture={onCapture}
+              style={{ ...styles.add }}
+              ref={ref2}
+              options={{ format: "jpg", quality: 0.6 }}
+            >
+              {/* <View style={{ ...styles.add }}> */}
+            
               {image ? (
                 <TouchableOpacity
                   onPress={pickImage}
@@ -168,7 +172,8 @@ captureViewCollection  // }, []);
                   />
                 </TouchableOpacity>
               )}
-            </View>
+              {/* </View> */}
+            </ViewShot>
           </View>
         </LinearGradient>
       </ViewShot>

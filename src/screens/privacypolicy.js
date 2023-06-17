@@ -29,7 +29,7 @@ import { useClientQuery, useMutations } from "../services/api";
 import { appToast } from "../components/Helpers";
 import WithSpinner from "../components/withspinner";
 
-const Settings = ({ navigation, setLoading }) => {
+const PrivacyPolicy = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const user = useSelector(({ user }) => user.data);
   const dispatch = useDispatch();
@@ -263,11 +263,11 @@ const Settings = ({ navigation, setLoading }) => {
               style={{
                 ...fonts.medium,
                 // fontSize: 25,
-                marginLeft: "27%",
+                marginLeft: "19%",
                 fontWeight: "bold",
               }}
             >
-              Settings
+              Privacy Policy
             </Text>
           </View>
           <View
@@ -277,21 +277,7 @@ const Settings = ({ navigation, setLoading }) => {
               minHeight: "40%",
             }}
           >
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => null}
-            >
-              <Text
-                style={{
-                  ...fonts.medium,
-                  fontSize: 20,
-                  marginVertical: 10,
-                  color: colors.secondary,
-                }}
-              >
-                Support & FeedBack
-              </Text>
-            </TouchableHighlight>
+         
             {/* <TouchableHighlight
               underlayColor={colors.body6}
               onPress={() => null}
@@ -307,123 +293,10 @@ const Settings = ({ navigation, setLoading }) => {
              
               </Text>
             </TouchableHighlight> */}
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => navigation?.navigate("EditProfile")}
-            >
-              <Text
-                style={{
-                  ...fonts.medium,
-                  fontSize: 20,
-                  marginVertical: 10,
-                  color: colors.secondary,
-                }}
-              >
-                Edit my profile
-              </Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => navigation?.navigate("PrivacyPolicy")}
-            >
-              <Text
-                style={{
-                  ...fonts.medium,
-                  fontSize: 20,
-                  marginVertical: 10,
-                  color: colors.secondary,
-                }}
-              >
-                Privacy Policy
-              </Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => showEditTags()}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text
-                  style={{
-                    ...fonts.medium,
-                    fontSize: 20,
-                    marginVertical: 10,
-                    color: colors.secondary,
-                  }}
-                >
-                  My Tags
-                </Text>
-                <AntDesign color={colors.secondary} name="edit" size={24} />
-              </View>
-            </TouchableHighlight>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                flexWrap: "wrap",
-              }}
-            >
-              {data?.data &&
-                Object.entries(data?.data?.[0]).map((entry) => {
-                  const [key, value] = entry;
-                  return (
-                    value == true && (
-                      <View style={styles.tags}>
-                        <Text style={{ fontSize: 11 }}> # {key}</Text>
-                      </View>
-                    )
-                  );
-                })}
-              {/* <View style={styles.tags}>
-              <Text> # holidays</Text>
-            </View>
-            <View style={styles.tags}>
-              <Text> # leasure</Text>
-            </View>
-            <View style={styles.tags}>
-              <Text> # Cars</Text>
-            </View> */}
-            </View>
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => {
-                Linking.openURL(
-                  "https://www.instagram.com/cartora.app?r=nametag"
-                );
-              }}
-            >
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Text
-                  style={{
-                    ...fonts.medium,
-                    fontSize: 20,
-                    marginVertical: 10,
-                    color: colors.secondary,
-                    marginRight: 9,
-                  }}
-                >
-                  Join Cartora on Instaram
-                </Text>
+         
+            
+           
 
-                <AntDesign name="instagram" size={24} color="#C13584" />
-              </View>
-            </TouchableHighlight>
-
-            <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={handleLogout}
-            >
-              <Text
-                style={{
-                  ...fonts.medium,
-                  fontSize: 20,
-
-                  marginVertical: 10,
-                  color: colors.secondary,
-                }}
-              >
-                Sign Out
-              </Text>
-            </TouchableHighlight>
           </View>
           <View>
             <View style={{ alignItems: "center" }}>
@@ -474,8 +347,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   tinyLogo: {
-    height: 170,
-    width: 170,
+    height: 100,
+    width: 100,
   },
   tags: {
     borderWidth: 1,
@@ -507,4 +380,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WithSpinner(Settings);
+export default WithSpinner(PrivacyPolicy);

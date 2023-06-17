@@ -26,7 +26,11 @@ import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
 import { useDispatch, useSelector } from "react-redux";
-import { useClientQuery, useMutations, useUploadMutations } from "../services/api";
+import {
+  useClientQuery,
+  useMutations,
+  useUploadMutations,
+} from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import WithSpinner from "../components/withspinner";
 import { useState } from "react";
@@ -39,17 +43,17 @@ const Account = ({ navigation, setLoading }) => {
   const user = useSelector(({ user }) => user.data);
   const [image, setImage] = React.useState(null);
   const { data, isError, isLoading, refetch } = useClientQuery(
-    `Products/getUserProducst/${user.id}`
+    `Products/getUserProducst/${user?.id}`
   );
   const [details, setDetails] = useState(user?.aboutMe || "");
   const { mutate } = useMutations();
-  const { mutate:mutateUpload } = useUploadMutations();
+  const { mutate: mutateUpload } = useUploadMutations();
   const {
     data: knitData,
     isError: kintError,
     isLoading: knitIsloadibg,
     refetch: knitRefetch,
-  } = useClientQuery(`Users/fetchKniters/${user.id}`);
+  } = useClientQuery(`Users/fetchKniters/${user?.id}`);
 
   const { show } = appToast();
   const dispatch = useDispatch();
@@ -60,7 +64,6 @@ const Account = ({ navigation, setLoading }) => {
   const showEditTest = () => setEdittest(true);
   const hideEditTest = () => setEdittest(false);
 
-
   const uploadprofile = async (Image) => {
     let formData = new FormData();
     formData.append("File", {
@@ -70,8 +73,8 @@ const Account = ({ navigation, setLoading }) => {
     });
     // setLoading(true);
 
-    console.log("url is",Image?.uri)
-  
+    console.log("url is", Image?.uri);
+
     mutateUpload(
       {
         key: "Products/uploadprofile",
@@ -136,7 +139,37 @@ const Account = ({ navigation, setLoading }) => {
     );
   };
 
+  const DeleteProducts = (id) => {
+    mutate(
+      {
+        key: `Products/deleteProduct/${id}`,
+        method: "post",
+        // data: payload,
+      },
+      {
+        onSuccess: (res) => {
+          // setLoading(false);
+          show(res?.message, {
+            type: "normal",
+          });
+          // console.log(res);
+          refetch();
+          // dispatch(logIn(res.data[0]));
+          // AsyncSave("token", res?.data?.[0]?.token);
+        },
 
+        onError: (error) => {
+          // setLoading(false);
+          show(error?.message);
+          console.log(error);
+        },
+      }
+    );
+  };
+
+  const handleDelete = (id) => {
+    DeleteProducts(id);
+  };
   return (
     <>
       <Portal>
@@ -221,13 +254,13 @@ const Account = ({ navigation, setLoading }) => {
                   : require("../../assets/avatar.png")
               }
             />
-            <TouchableNativeFeedback onPress={pickImage}>
+            {/* <TouchableNativeFeedback onPress={pickImage}>
               <AntDesign
                 style={{ position: "absolute", bottom: -10, right: -10 }}
                 name="edit"
                 size={24}
               />
-            </TouchableNativeFeedback>
+            </TouchableNativeFeedback> */}
           </View>
           <View
             style={{
@@ -249,32 +282,44 @@ const Account = ({ navigation, setLoading }) => {
                 <Text style={styles.sub}>products</Text>
               </Text>
             </View>
-            <View style={{ alignItems: "center" }}>
-              <Text
-                style={{
-                  ...fonts.small,
-                  textAlign: "center",
-                  fontSize: 16,
-                }}
-              >
-                {knitData?.data?.[0]?.knited || 0}
-                {"\n"}
-                <Text style={styles.sub}>Knitted</Text>
-              </Text>
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <Text
-                style={{
-                  ...fonts.small,
-                  textAlign: "center",
-                  fontSize: 16,
-                }}
-              >
-                {knitData?.data?.[0]?.kniters || 0}
-                {"\n"}
-                <Text style={styles.sub}>knitters</Text>
-              </Text>
-            </View>
+            <TouchableNativeFeedback
+              onPress={() =>
+                navigation?.navigate("KnittedList", { userId: user?.id })
+              }
+            >
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    ...fonts.small,
+                    textAlign: "center",
+                    fontSize: 16,
+                  }}
+                >
+                  {knitData?.data?.[0]?.knited || 0}
+                  {"\n"}
+                  <Text style={styles.sub}>Knitted</Text>
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
+            <TouchableNativeFeedback
+              onPress={() =>
+                navigation?.navigate("KnittersList", { userId: user?.id })
+              }
+            >
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    ...fonts.small,
+                    textAlign: "center",
+                    fontSize: 16,
+                  }}
+                >
+                  {knitData?.data?.[0]?.kniters || 0}
+                  {"\n"}
+                  <Text style={styles.sub}>knitters</Text>
+                </Text>
+              </View>
+            </TouchableNativeFeedback>
           </View>
         </View>
         <View
@@ -343,7 +388,11 @@ const Account = ({ navigation, setLoading }) => {
                   }}
                   data={data?.data || []}
                   renderItem={(item) => (
-                    <ProfileItem navigation={navigation} item={item} />
+                    <ProfileItem
+                      navigation={navigation}
+                      item={item}
+                      handleDelete={handleDelete}
+                    />
                   )}
                   keyExtractor={(data, index) => index}
                 />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,7 +6,10 @@ import {
   TextInput,
   Image,
   FlatList,
+  Modal,
+  TouchableOpacity,
 } from "react-native";
+
 import { color, design } from "../constants";
 import { useTheme, Avatar } from "react-native-paper";
 import { Button, Title, Paragraph } from "react-native-paper";
@@ -20,42 +23,123 @@ import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
 import { Formik } from "formik";
 import Header from "../components/header";
-import ProfileItem from "../components/ProfileItem";
+import ProfileItem from "../components/CollectionProfileItem";
 import { useSelector } from "react-redux";
-import { useClientQuery } from "../services/api";
+import { useClientQuery, useMutations } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
+import Editcart from "./editcart";
+import { appToast } from "../components/Helpers";
 
 const Collections = ({ navigation }) => {
   const { colors, fonts } = useTheme();
+  const [item, setItems] = React.useState({});
   const user = useSelector(({ user }) => user.data);
   const { data, isError, isLoading, refetch } = useClientQuery(
     `Products/getMyCollections/${user?.id}`
   );
-// useFocusEffect(()=>{refetch()})
+  const { mutate } = useMutations();
+  const { show } = appToast();
+  const [modalVisible, setModalVisible] = useState(false);
+  useFocusEffect(() => {
+    refetch();
+  });
+
+  const handleShow = (items) => {
+    setModalVisible(!modalVisible);
+    setItems(items);
+  };
+  const handleHide = () => {
+    setModalVisible(false);
+    setItems({});
+  };
+
+  const DeleteProducts = (id) => {
+    console.log(`Products/deleteProduct/${id}`);
+
+    mutate(
+      {
+        key: `Products/deleteProduct/${id}`,
+        method: "post",
+        // data: payload,
+      },
+      {
+        onSuccess: (res) => {
+          // setLoading(false);
+          show(res?.message, {
+            type: "normal",
+          });
+          // console.log(res);
+          refetch();
+          // dispatch(logIn(res.data[0]));
+          // AsyncSave("token", res?.data?.[0]?.token);
+        },
+
+        onError: (error) => {
+          // setLoading(false);
+          show(error?.message);
+          console.log(error);
+        },
+      }
+    );
+  };
+
+  const handleDelete = (id) => {
+    DeleteProducts(id);
+  };
+
   return (
-    <View style={styles.container}>
-      <Header navigation={navigation} />
-      <View style={styles.section}>
-        <View style={{ flex: 1, alignItems: "center" }}>
-          {data?.data?.length > 0 ? (
-            <FlatList
-              numColumns={2}
-              contentContainerStyle={{ justifyContent: "center" }}
-              style={{
-                flexWrap: "wrap",
-                display: "flex",
-                width: "100%",
-              }}
-              data={data?.data || []}
-              renderItem={(item) => <ProfileItem />}
-              keyExtractor={(data, index) => index}
-            />
-          ) : (
-            <Text>Collections is empty</Text>
-          )}
+    <>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        style={{
+          margin: 50,
+          backgroundColor: "white",
+          elevation: 5,
+          borderRadius: 10,
+          paddingTop: 80,
+        }}
+        onRequestClose={() => {
+          Alert.alert("Modal has been closed.");
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <Editcart items={item} handleHide={handleHide} />
+      </Modal>
+      <View style={styles.container}>
+        <Header navigation={navigation} />
+        <View style={styles.section}>
+          <View style={{ flex: 1, alignItems: "center" }}>
+            {data?.data?.length > 0 ? (
+              <FlatList
+                numColumns={2}
+                onRefresh={refetch}
+                refreshing={isLoading}
+                contentContainerStyle={{ justifyContent: "center" }}
+                style={{
+                  flexWrap: "wrap",
+                  display: "flex",
+                  width: "100%",
+                }}
+                data={data?.data || []}
+                renderItem={(item) => (
+                  <ProfileItem
+                    handleDelete={handleDelete}
+                    navigation={navigation}
+                    handleShow={handleShow}
+                    item={item}
+                  />
+                )}
+                keyExtractor={(data, index) => index}
+              />
+            ) : (
+              <Text>Collections is empty</Text>
+            )}
+          </View>
         </View>
       </View>
-    </View>
+    </>
   );
 };
 
