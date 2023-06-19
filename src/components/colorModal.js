@@ -20,10 +20,10 @@ const ColorModal = ({
 }) => {
   const { colors, fonts } = useTheme();
   const [checked, setChecked] = React.useState(1);
-  const changeColor = (itemcolor, selected) => {
-    const index = selected - 1;
-    const snapshot = [...frameColors];
-    snapshot[index] = itemcolor;
+  const changeColor = (itemcolor) => {
+    // const index = selected - 1;
+    const snapshot = [itemcolor, itemcolor, itemcolor, itemcolor];
+    // snapshot[index] = itemcolor;
     setFrameColors(snapshot);
   };
 
@@ -67,7 +67,7 @@ const ColorModal = ({
                   fontSize: 20,
                   marginVertical: 10,
                   color: colors.secondary,
-                  marginBottom:14
+                  marginBottom: 14,
                 }}
               >
                 Frame color :
@@ -157,7 +157,7 @@ const ColorModal = ({
               {webColors.map((item, index) => (
                 <ButtonC
                   key={index}
-                  onPress={() => changeColor(item, checked)}
+                  onPress={() => changeColor(item)}
                   style={{
                     ...styles.editbtn,
                     backgroundColor: item,

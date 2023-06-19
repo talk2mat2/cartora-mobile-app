@@ -139,6 +139,10 @@ const Cart = ({ navigation, setLoading }) => {
       {
         onSuccess: (success) => {
           setLoading(false);
+          // setImage(null)
+          // setEditPrice(0)
+          // setDetailstitle("")
+          // setDetailsFull("")
           show(success?.message, {
             type: "normal",
           });
@@ -199,6 +203,10 @@ const Cart = ({ navigation, setLoading }) => {
       {
         onSuccess: (success) => {
           setLoading(false);
+          setImage(null)
+          setEditPrice(0)
+          setDetailstitle("")
+          setDetailsFull("")
           show("Collection saved", {
             type: "normal",
           });
@@ -215,18 +223,19 @@ const Cart = ({ navigation, setLoading }) => {
     <View style={styles.container}>
       <Header navigation={navigation} />
       <View style={{ ...styles.header, borderColor: colors.body5 }}>
-        <View>
+       
           <ButtonC
             style={{
               backgroundColor: colors.textColor2,
               paddingHorizontal: 1,
               borderWidth: 0,
+              padding:2
             }}
             onPress={handlePostToCollection}
             textStyle={{ color: colors.primary, fontWeight: "700" }}
             title="+ ADD TO COLLECTION"
           />
-        </View>
+       
         <ButtonC
           style={{ backgroundColor: colors.primary, paddingHorizontal: 20 }}
           textStyle={{ color: colors.textColor2, fontWeight: "700" }}
@@ -267,7 +276,7 @@ const Cart = ({ navigation, setLoading }) => {
             <Text
               style={{ ...fonts.small, fontWeight: "800", textAlign: "center" }}
             >
-              Product description
+              Product descriptions
             </Text>
           </View>
           <TextInput
@@ -277,14 +286,14 @@ const Cart = ({ navigation, setLoading }) => {
               height: 33,
             }}
             maxLength={200}
-            value={detailstitle}
+            defaultValue={detailstitle}
             onChangeText={setDetailstitle}
             placeholder="title"
           />
           <View style={{ ...styles.editText, borderColor: colors.body6 }}>
             <TextInput
               style={styles.inputText}
-              value={details}
+              defaultValue={details}
               autoCapitalize={true}
               placeholder={"Add product description"}
               autoFocus={true}

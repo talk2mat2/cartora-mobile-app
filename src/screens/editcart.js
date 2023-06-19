@@ -51,7 +51,7 @@ const EditCart = ({ navigation, setLoading, route, handleHide, items }) => {
   const [frameColors, setFrameColors] = useState(
     item?.item?.frameColors?.split(",") || [
       "#cccccc",
-      "#ffffff",
+      "#cccccc",
       "#cccccc",
       "#cccccc",
     ]
@@ -332,7 +332,7 @@ const EditCart = ({ navigation, setLoading, route, handleHide, items }) => {
           <View style={{ ...styles.editText, borderColor: colors.body6 }}>
             <TextInput
               style={styles.inputText}
-              value={details}
+              defaultValue={details}
               autoCapitalize={true}
               placeholder={"Add product description"}
               autoFocus={true}
@@ -348,7 +348,7 @@ const EditCart = ({ navigation, setLoading, route, handleHide, items }) => {
               height: 32,
             }}
             maxLength={200}
-            value={detailsPromo}
+            defaultValue={detailsPromo}
             onChangeText={setDetailsPromo}
             placeholder="Promo Text"
           />

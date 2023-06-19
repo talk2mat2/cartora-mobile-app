@@ -25,7 +25,7 @@ const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
           <Image style={styles.stock} source={{ uri: item?.item?.snapshot }} />
         </View>
         <View style={{ ...styles.footerItem }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <View style={{ flexDirection: "row", alignItems: "center" ,maxWidth:"70%"}}>
             <View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
@@ -71,7 +71,7 @@ const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
               >
                 {item?.item?.title}
               </Text>
-              <Text
+              <Text  numberOfLines={8}
                 style={{
                   ...fonts.small,
                   fontWeight: "200",

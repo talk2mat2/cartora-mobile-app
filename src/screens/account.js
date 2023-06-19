@@ -3,11 +3,12 @@ import {
   View,
   StyleSheet,
   Text,
-  TextInput,
   Image,
   FlatList,
   TouchableNativeFeedback,
   TouchableHighlight,
+  ActivityIndicator,
+  TextInput,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { color, design } from "../constants";
@@ -27,6 +28,7 @@ import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  forceQuery,
   useClientQuery,
   useMutations,
   useUploadMutations,
@@ -41,10 +43,18 @@ const Account = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const [eidtText, setEdittest] = useState(false);
   const user = useSelector(({ user }) => user.data);
+  const [loadingMore, setLoadingMore] = React.useState(false);
   const [image, setImage] = React.useState(null);
   const { data, isError, isLoading, refetch } = useClientQuery(
-    `Products/getUserProducst/${user?.id}`
+    `Products/getUserProducst/${user?.id}?` + "position=" + 0
   );
+  const {
+    data: countData,
+    isLoading: isCounting,
+    refetch: refetchCount,
+  } = useClientQuery(`Products/CountUserProducs/${user?.id}`);
+  const [updatedData, setUpdatedData] = React.useState(data?.data);
+
   const [details, setDetails] = useState(user?.aboutMe || "");
   const { mutate } = useMutations();
   const { mutate: mutateUpload } = useUploadMutations();
@@ -57,10 +67,20 @@ const Account = ({ navigation, setLoading }) => {
 
   const { show } = appToast();
   const dispatch = useDispatch();
-  useFocusEffect(() => {
-    refetch();
-    knitRefetch();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      refetch();
+      console.log("usefocus");
+      refetchCount();
+      knitRefetch();
+    }, [])
+  );
+  React.useEffect(() => {
+
+    if (data?.data?.length) {
+      setUpdatedData(data?.data);
+    }
+  }, [isLoading, data]);
   const showEditTest = () => setEdittest(true);
   const hideEditTest = () => setEdittest(false);
 
@@ -149,16 +169,20 @@ const Account = ({ navigation, setLoading }) => {
       {
         onSuccess: (res) => {
           // setLoading(false);
+          const newUpdates = updatedData?.filter((item) => item?.id != id);
+
+          
+          refetchCount();
           show(res?.message, {
             type: "normal",
           });
-          // console.log(res);
+
           refetch();
-          // dispatch(logIn(res.data[0]));
-          // AsyncSave("token", res?.data?.[0]?.token);
         },
 
         onError: (error) => {
+          refetchCount();
+          refetch();
           // setLoading(false);
           show(error?.message);
           console.log(error);
@@ -166,9 +190,32 @@ const Account = ({ navigation, setLoading }) => {
       }
     );
   };
-
+  React.useEffect(() => {
+    if (data?.data?.length > 0) {
+      setUpdatedData(data?.data);
+    }
+  }, [isLoading]);
   const handleDelete = (id) => {
     DeleteProducts(id);
+  };
+
+  const loadMore = async () => {
+    setLoadingMore(true);
+    await forceQuery(
+      `Products/getUserProducst/${user?.id}?` +
+        "position=" +
+        updatedData?.length,
+      "get",
+      null
+    )
+      .then((res) => {
+        setLoadingMore(false);
+
+        res?.data?.length && setUpdatedData([...updatedData, ...res?.data]);
+      })
+      .catch((err) => {
+        setLoadingMore(false);
+      });
   };
   return (
     <>
@@ -192,9 +239,9 @@ const Account = ({ navigation, setLoading }) => {
           <View style={{ ...styles.editText, borderColor: colors.body6 }}>
             <TextInput
               style={styles.inputText}
-              value={details}
+              defaultValue={details}
               autoCapitalize={true}
-              placeholder={"Add product description"}
+              placeholder={"Add description"}
               autoFocus={true}
               onChangeText={setDetails}
               // onSubmitEditing={onSubmitEditing}
@@ -277,7 +324,7 @@ const Account = ({ navigation, setLoading }) => {
                   fontSize: 16,
                 }}
               >
-                {data?.data?.length || 0}
+                {countData?.data?.[0]?.count || 0}
                 {"\n"}
                 <Text style={styles.sub}>products</Text>
               </Text>
@@ -375,10 +422,11 @@ const Account = ({ navigation, setLoading }) => {
             // disableSwipe={false} // (default=false) disable swipe to left/right gestures
           >
             <TabScreen label="" icon="home">
-              <View style={{ flex: 1, alignItems: "center" }}>
+              <View style={{ flex: 1, alignItems: "center", marginBottom: 40 }}>
                 <FlatList
                   numColumns={2}
                   onRefresh={refetch}
+                  onEndReached={loadMore}
                   refreshing={isLoading}
                   contentContainerStyle={{ justifyContent: "center" }}
                   style={{
@@ -386,7 +434,7 @@ const Account = ({ navigation, setLoading }) => {
                     display: "flex",
                     width: "100%",
                   }}
-                  data={data?.data || []}
+                  data={updatedData || []}
                   renderItem={(item) => (
                     <ProfileItem
                       navigation={navigation}
@@ -396,11 +444,12 @@ const Account = ({ navigation, setLoading }) => {
                   )}
                   keyExtractor={(data, index) => index}
                 />
+                {loadingMore && <ActivityIndicator size={20} style={{}} />}
               </View>
             </TabScreen>
 
             <TabScreen
-              label="2"
+              label=""
               icon="message"
               // optional props
               // onPressIn={() => {
@@ -410,9 +459,7 @@ const Account = ({ navigation, setLoading }) => {
               //   console.log('onPress explore');
               // }}
             >
-              <View style={{ flex: 1 }}>
-                <Text>comming soon</Text>
-              </View>
+              <View style={{ flex: 1 }}>{/* <Text>comming soon</Text> */}</View>
             </TabScreen>
           </Tabs>
         </View>

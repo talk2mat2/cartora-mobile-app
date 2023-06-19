@@ -85,255 +85,233 @@ const PrivacyPolicy = ({ navigation, setLoading }) => {
 
   return (
     <>
-      <ScrollView>
-        <Portal>
-          <Modal
-            visible={showTags}
-            onDismiss={hideEditTags}
-            contentContainerStyle={{
-              ...styles.modal1,
-              backgroundColor: colors.body,
-              minHeight: "90%",
-            }}
-          >
-            <View style={{ marginBottom: 8 }}>
-              <Text
-                style={{
-                  ...fonts.small,
-                  fontWeight: "800",
-                  textAlign: "center",
-                }}
-              >
-                Set Business tags
-              </Text>
-            </View>
-
-            <Formik
-              // validationSchema={{}}
-              initialValues={{
-                Vehicles: data?.data?.[0]?.vehicles || false,
-                // User: false,
-                Properties: data?.data?.[0]?.properties || false,
-                Electronics: data?.data?.[0]?.electronics || false,
-                Furnitures: data?.data?.[0]?.furnitures || false,
-                Health: data?.data?.[0]?.health || false,
-                Fashion: data?.data?.[0]?.fashion || false,
-                Sport: data?.data?.[0]?.sport || false,
-                Services: data?.data?.[0]?.services || false,
-                Jobs: data?.data?.[0]?.jobs || false,
-                Babies: data?.data?.[0]?.babies || false,
-                Agric: data?.data?.[0]?.agric || false,
-                Repairs: data?.data?.[0]?.repairs || false,
-                Equipments: data?.data?.[0]?.equipments || false,
-              }}
-              onSubmit={(values) => {
-                subMitdata(values);
-                setLoading(true);
-                Keyboard.dismiss();
-              }}
-            >
-              {({
-                handleChange,
-                handleBlur,
-                handleSubmit,
-                values,
-                errors,
-                setFieldValue,
-              }) => (
-                <>
-                  <View style={{ marginTop: "15%" }}>
-                    <ScrollView>
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Vehicles", !values.Vehicles)
-                        }
-                        status={values.Vehicles === true ? "checked" : ""}
-                        label="Vehicles"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Properties", !values.Properties)
-                        }
-                        status={values.Properties === true ? "checked" : ""}
-                        label="Properties"
-                      />
-
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Electronics", !values.Electronics)
-                        }
-                        status={values.Electronics === true ? "checked" : ""}
-                        label="Electronics"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Furnitures", !values.Furnitures)
-                        }
-                        status={values.Furnitures === true ? "checked" : ""}
-                        label="Furnitures"
-                      />
-                      <CheckBox
-                        onPress={() => setFieldValue("Health", !values.Health)}
-                        status={values.Health === true ? "checked" : ""}
-                        label="Health"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Fashion", !values.Fashion)
-                        }
-                        status={values.Fashion === true ? "checked" : ""}
-                        label="Fashion"
-                      />
-                      <CheckBox
-                        onPress={() => setFieldValue("Sport", !values.Sport)}
-                        status={values.Sport === true ? "checked" : ""}
-                        label="Sport & Outdoors"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Services", !values.Services)
-                        }
-                        status={values.Services === true ? "checked" : ""}
-                        label="Services"
-                      />
-                      <CheckBox
-                        onPress={() => setFieldValue("Jobs", !values.Jobs)}
-                        status={values.Jobs === true ? "checked" : ""}
-                        label="Jobs"
-                      />
-                      <CheckBox
-                        onPress={() => setFieldValue("Babies", !values.Babies)}
-                        status={values.Babies === true ? "checked" : ""}
-                        label="Babies"
-                      />
-                      <CheckBox
-                        onPress={() => setFieldValue("Agric", !values.Agric)}
-                        status={values.Agric === true ? "checked" : ""}
-                        label="Agric"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Repairs", !values.Repairs)
-                        }
-                        status={values.Repairs === true ? "checked" : ""}
-                        label="Repairs"
-                      />
-                      <CheckBox
-                        onPress={() =>
-                          setFieldValue("Equipments", !values.Equipments)
-                        }
-                        status={values.Equipments === true ? "checked" : ""}
-                        label="Equipments"
-                      />
-                    </ScrollView>
-                  </View>
-                  <View style={{ alignItems: "flex-end", marginTop: "auto" }}>
-                    <ButtonC
-                      style={{
-                        backgroundColor: colors.primary,
-                        paddingHorizontal: 20,
-                      }}
-                      textStyle={{
-                        color: colors.textColor2,
-                        fontWeight: "700",
-                      }}
-                      title="DONE"
-                      onPress={() => {
-                        // hideEditTags()
-                        handleSubmit();
-                        // setDetailsFull(details);
-                      }}
-                    />
-                  </View>
-                </>
-              )}
-            </Formik>
-          </Modal>
-        </Portal>
-        <View style={styles.container}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
-            <TouchableOpacity
-              style={{ width: 40 }}
-              onPress={() => navigation.goBack()}
-            >
-              <AntDesign name="left" size={30} color="black" />
-            </TouchableOpacity>
-
+      <Portal>
+        <Modal
+          visible={showTags}
+          onDismiss={hideEditTags}
+          contentContainerStyle={{
+            ...styles.modal1,
+            backgroundColor: colors.body,
+            minHeight: "90%",
+          }}
+        >
+          <View style={{ marginBottom: 8 }}>
             <Text
               style={{
-                ...fonts.medium,
-                // fontSize: 25,
-                marginLeft: "19%",
-                fontWeight: "bold",
+                ...fonts.small,
+                fontWeight: "800",
+                textAlign: "center",
               }}
             >
-              Privacy Policy
+              Set Business tags
             </Text>
           </View>
-          <View
-            style={{
-              paddingHorizontal: design.padding1,
-              marginTop: 20,
-              minHeight: "40%",
+
+          <Formik
+            // validationSchema={{}}
+            initialValues={{
+              Vehicles: data?.data?.[0]?.vehicles || false,
+              // User: false,
+              Properties: data?.data?.[0]?.properties || false,
+              Electronics: data?.data?.[0]?.electronics || false,
+              Furnitures: data?.data?.[0]?.furnitures || false,
+              Health: data?.data?.[0]?.health || false,
+              Fashion: data?.data?.[0]?.fashion || false,
+              Sport: data?.data?.[0]?.sport || false,
+              Services: data?.data?.[0]?.services || false,
+              Jobs: data?.data?.[0]?.jobs || false,
+              Babies: data?.data?.[0]?.babies || false,
+              Agric: data?.data?.[0]?.agric || false,
+              Repairs: data?.data?.[0]?.repairs || false,
+              Equipments: data?.data?.[0]?.equipments || false,
+            }}
+            onSubmit={(values) => {
+              subMitdata(values);
+              setLoading(true);
+              Keyboard.dismiss();
             }}
           >
-         
-            {/* <TouchableHighlight
-              underlayColor={colors.body6}
-              onPress={() => null}
-            >
-              <Text
-                style={{
-                  ...fonts.medium,
-                  fontSize: 20,
-                  marginVertical: 10,
-                  color: colors.secondary,
-                }}
-              >
-             
-              </Text>
-            </TouchableHighlight> */}
-         
-            
-           
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              setFieldValue,
+            }) => (
+              <>
+                <View style={{ marginTop: "15%" }}>
+                  <ScrollView>
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Vehicles", !values.Vehicles)
+                      }
+                      status={values.Vehicles === true ? "checked" : ""}
+                      label="Vehicles"
+                    />
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Properties", !values.Properties)
+                      }
+                      status={values.Properties === true ? "checked" : ""}
+                      label="Properties"
+                    />
 
-          </View>
-          <View>
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Electronics", !values.Electronics)
+                      }
+                      status={values.Electronics === true ? "checked" : ""}
+                      label="Electronics"
+                    />
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Furnitures", !values.Furnitures)
+                      }
+                      status={values.Furnitures === true ? "checked" : ""}
+                      label="Furnitures"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Health", !values.Health)}
+                      status={values.Health === true ? "checked" : ""}
+                      label="Health"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Fashion", !values.Fashion)}
+                      status={values.Fashion === true ? "checked" : ""}
+                      label="Fashion"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Sport", !values.Sport)}
+                      status={values.Sport === true ? "checked" : ""}
+                      label="Sport & Outdoors"
+                    />
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Services", !values.Services)
+                      }
+                      status={values.Services === true ? "checked" : ""}
+                      label="Services"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Jobs", !values.Jobs)}
+                      status={values.Jobs === true ? "checked" : ""}
+                      label="Jobs"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Babies", !values.Babies)}
+                      status={values.Babies === true ? "checked" : ""}
+                      label="Babies"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Agric", !values.Agric)}
+                      status={values.Agric === true ? "checked" : ""}
+                      label="Agric"
+                    />
+                    <CheckBox
+                      onPress={() => setFieldValue("Repairs", !values.Repairs)}
+                      status={values.Repairs === true ? "checked" : ""}
+                      label="Repairs"
+                    />
+                    <CheckBox
+                      onPress={() =>
+                        setFieldValue("Equipments", !values.Equipments)
+                      }
+                      status={values.Equipments === true ? "checked" : ""}
+                      label="Equipments"
+                    />
+                  </ScrollView>
+                </View>
+                <View style={{ alignItems: "flex-end", marginTop: "auto" }}>
+                  <ButtonC
+                    style={{
+                      backgroundColor: colors.primary,
+                      paddingHorizontal: 20,
+                    }}
+                    textStyle={{
+                      color: colors.textColor2,
+                      fontWeight: "700",
+                    }}
+                    title="DONE"
+                    onPress={() => {
+                      // hideEditTags()
+                      handleSubmit();
+                      // setDetailsFull(details);
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </Formik>
+        </Modal>
+      </Portal>
+      <View style={styles.container}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableOpacity
+            style={{ width: 40 }}
+            onPress={() => navigation.goBack()}
+          >
+            <AntDesign name="left" size={30} color="black" />
+          </TouchableOpacity>
+
+          <Text
+            style={{
+              ...fonts.medium,
+              // fontSize: 25,
+              marginLeft: "19%",
+              fontWeight: "bold",
+            }}
+          >
+            Privacy Policy
+          </Text>
+        </View>
+
+        <ScrollView>
+          <View style={{}}>
             <View style={{ alignItems: "center" }}>
               <Image
                 style={styles.tinyLogo}
                 source={require("../../assets/logo2.png")}
               />
             </View>
-            <View style={{ alignItems: "center" }}>
-              <Text
-                style={{
-                  ...fonts.small,
-                  fontWeight: "700",
-                  fontSize: 16,
-                  lineHeight: 17,
-                  paddingVertical: 5,
-                  textAlign: "center",
-                }}
-              >
-                Version 1.2.0{"\n"}
-                {"\n"}
+            {[1, 2, 3, 4].map((item) => (
+              <View style={{ alignItems: "center" }}>
                 <Text
-                  style={{ ...fonts.small, fontWeight: "300", fontSize: 13 }}
+                  style={{
+                    ...fonts.small,
+                    fontWeight: "bold",
+                    fontSize: 16,
+                    lineHeight: 17,
+                    paddingVertical: 5,
+                    textAlign: "center",
+                  }}
                 >
-                  Terms of Service and privacy Policy{"\n"}
-                  {"\n"}
+                  The information we collect
                 </Text>
                 <Text
-                  style={{ ...fonts.small, fontWeight: "300", fontSize: 13 }}
+                  style={{
+                    ...fonts.small,
+                    fontWeight: "300",
+                    fontSize: 13,
+                    color: color.grey7,
+                  }}
                 >
-                  Delete My Cartora Account{"\n"}
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry. Lorem Ipsum has been the industry's
+                  standard dummy text ever since the 1500s, when an unknown
+                  printer took a galley of type and scrambled it to make a type
+                  specimen book. It has survived not only five centuries, but
+                  also the leap into electronic typesetting, remaining
+                  essentially unchanged. It was popularised in the 1960s with
+                  the release of Letraset sheets containing Lorem Ipsum
+                  passages, and more recently with desktop publishing software
+                  like Aldus PageMaker including versions of Lorem Ipsum.
                 </Text>
-              </Text>
-            </View>
+              </View>
+            ))}
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
     </>
   );
 };

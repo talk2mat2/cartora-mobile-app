@@ -8,7 +8,7 @@ import { logOut } from "../redux/reducers/usersSlice";
 // import https from "https"
 
 // const baseUrl = getEnvVars().apiUrl;
-//const baseUrl = "http://www.cserver.somee.com/api/v1";
+// const baseUrl = "http://www.cserver.somee.com/api/v1";
 const baseUrl = "http://192.168.8.103:5262/api/v1";
 // axios.defaults.httpAgent=new https.Agent({
 //   rejectUnauthorized:false
@@ -26,17 +26,20 @@ const rootApi = (hash, header) => {
 };
 
 export const useClientQuery = (key) => {
-  const { data, isError, isLoading, refetch ,error} = useQuery(key, async () => {
-    const hash = (await AsyncGetItem("token")) || "";
-    return rootApi(hash, null)
-      .get("/" + key)
-      .then((res) => res.data)
-      .catch((err) => {
-        console.log("query error=", err);
-        err.response.data.statusCode = err.response?.status;
-        throw err?.response?.data;
-      });
-  });
+  const { data, isError, isLoading, refetch, error } = useQuery(
+    key,
+    async () => {
+      const hash = (await AsyncGetItem("token")) || "";
+      return rootApi(hash, null)
+        .get("/" + key)
+        .then((res) => res.data)
+        .catch((err) => {
+          console.log("query error=", err);
+          err.response.data.statusCode = err?.response?.status;
+          throw err?.response?.data;
+        });
+    }
+  );
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(logOut());
@@ -45,7 +48,7 @@ export const useClientQuery = (key) => {
     if (isError) {
       console.log(error?.statusCode, "response");
       if (error?.statusCode == "401") {
-        alert("session expired");
+        alert("Login required");
         setTimeout(handleLogout, 3000);
       }
       // Handle mutation errors here
@@ -93,7 +96,7 @@ export const useMutations = () => {
     if (isError) {
       console.log(error?.statusCode, "response");
       if (error?.statusCode == "401") {
-        alert("session expired");
+        alert("Login required");
         setTimeout(handleLogout, 3000);
       }
       // Handle mutation errors here
@@ -171,4 +174,16 @@ export const useUploadMutations = () => {
     );
   };
   return { mutate, isLoading };
+};
+
+export const forceQuery = async (key, method, data = null) => {
+  const hash = (await AsyncGetItem("token")) || "";
+  return rootApi(hash, null)
+    [method?.toLowerCase()](`/${key}`, data)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.log("error=", err);
+      err.response.data.statusCode = err.response?.status;
+      throw err?.response?.data;
+    });
 };

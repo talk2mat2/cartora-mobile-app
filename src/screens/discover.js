@@ -17,7 +17,7 @@ import { Formik } from "formik";
 import DiscoverItem from "../components/discoverItem";
 import Header from "../components/header";
 import WithSpinner from "../components/withspinner";
-import { useClientQuery, useMutations } from "../services/api";
+import { forceQuery, useClientQuery, useMutations } from "../services/api";
 import { useFocusEffect } from "@react-navigation/native";
 import { appToast, sortByDateAsc } from "../components/Helpers";
 import { useSelector } from "react-redux";
@@ -25,10 +25,13 @@ import { useSelector } from "react-redux";
 const Discover = ({ navigation, setLoading }) => {
   const { colors, fonts, font } = useTheme();
   const user = useSelector(({ user }) => user.data);
-  const { data, isError, isLoading, refetch } = useClientQuery(
-    "Products?userId=" + user?.id || "0"
-  );
+  const [loadingMore, setLoadingMore] = React.useState(false);
+  const [page, setPage] = React.useState(0);
+
   const [updatedData, setUpdatedData] = React.useState([]);
+  const { data, isError, isLoading, refetch } = useClientQuery(
+    "Products?userId=" + (user?.id || 0) + "&&position=" + 0
+  );
   const { mutate } = useMutations();
   const { show } = appToast();
   useFocusEffect(
@@ -39,7 +42,10 @@ const Discover = ({ navigation, setLoading }) => {
     }, [])
   );
   React.useEffect(() => {
-    setUpdatedData(data?.data);
+
+    if (data?.data?.length) {
+      setUpdatedData(data?.data);
+    }
   }, [isLoading, data]);
   // console.log(data);
   const DeleteProducts = (id) => {
@@ -74,6 +80,24 @@ const Discover = ({ navigation, setLoading }) => {
       }
     );
   };
+  const loadMore = async () => {
+    setLoadingMore(true);
+    await forceQuery(
+      "Products?userId=" +
+        (user?.id || 0) +
+        "&&position=" +
+        updatedData?.length,
+      "get",
+      null
+    )
+      .then((res) => {
+        setLoadingMore(false);
+        setUpdatedData([...updatedData, ...res?.data]);
+      })
+      .catch((err) => {
+        setLoadingMore(false);
+      });
+  };
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body }}>
       <Header navigation={navigation} />
@@ -85,9 +109,11 @@ const Discover = ({ navigation, setLoading }) => {
         <FlatList
           onRefresh={refetch}
           refreshing={false}
+          onEndReached={() => loadMore()}
           data={updatedData || []}
           renderItem={({ item, index }) => (
-            <DiscoverItem refetch={refetch}
+            <DiscoverItem
+              refetch={refetch}
               DeleteProducts={DeleteProducts}
               navigation={navigation}
               key={item.id}
@@ -97,6 +123,7 @@ const Discover = ({ navigation, setLoading }) => {
           keyExtractor={(item) => item.id}
         />
       ) : null}
+      {loadingMore && <ActivityIndicator size={20} style={{}} />}
     </View>
   );
 };

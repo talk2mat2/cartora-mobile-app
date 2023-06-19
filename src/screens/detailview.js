@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableNativeFeedback,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { color, design } from "../constants";
 import { useTheme, Avatar } from "react-native-paper";
@@ -24,13 +25,14 @@ import { AntDesign } from "@expo/vector-icons";
 import { Formik } from "formik";
 import Header from "../components/header";
 import ProfileItem from "../components/ProfileItem";
-import { useClientQuery } from "../services/api";
+import { forceQuery, useClientQuery } from "../services/api";
 import WithSpinner from "../components/withspinner";
 import Spinner from "../components/spinner";
 import DetailItem from "../components/DetailItem";
 
 const DetailView = ({ navigation, route }) => {
   const { colors, fonts } = useTheme();
+  const [loadingMore, setLoadingMore] = React.useState(false);
   const { userId } = route?.params;
   const { data, isError, isLoading, refetch } = useClientQuery(
     `Users/${userId}`
@@ -40,6 +42,11 @@ const DetailView = ({ navigation, route }) => {
     isError: kintError,
     isLoading: knitIsloadibg,
   } = useClientQuery(`Users/fetchKniters/${userId}`);
+  const {
+    data: countData,
+    isLoading: isCounting,
+    refetch: refetchCount,
+  } = useClientQuery(`Products/CountUserProducs/${userId}`);
 
   const {
     data: userProduct,
@@ -47,10 +54,30 @@ const DetailView = ({ navigation, route }) => {
     isLoading: isLoadingProducts,
     refetch: refetchProduct,
   } = useClientQuery(`Products/getUserProducst/${userId}`);
-  // React.useEffect(() => {
-  //   // console.log(data);
-  // }, [isLoading]);
+  const [updatedData, setUpdatedData] = React.useState(userProduct?.data);
+  React.useEffect(() => {
+    if(userProduct?.data?.length){
+      setUpdatedData(userProduct?.data)
+    }
+    // console.log(userProduct,isErrorProduct,userId);
+  }, [isLoadingProducts]);
 
+  const loadMore = async () => {
+    setLoadingMore(true);
+    await forceQuery(
+      `Products/getUserProducst/${userId}?` + "position=" + updatedData?.length,
+      "get",
+      null
+    )
+      .then((res) => {
+        setLoadingMore(false);
+
+        res?.data?.length && setUpdatedData([...updatedData, ...res?.data]);
+      })
+      .catch((err) => {
+        setLoadingMore(false);
+      });
+  };
   return (
     <View style={styles.container}>
       <View>
@@ -105,7 +132,7 @@ const DetailView = ({ navigation, route }) => {
                 fontSize: 16,
               }}
             >
-              {userProduct?.data?.length || 0}
+              {countData?.data?.[0]?.count || 0}
               {"\n"}
               <Text style={styles.sub}>products</Text>
             </Text>
@@ -191,28 +218,30 @@ const DetailView = ({ navigation, route }) => {
           // disableSwipe={false} // (default=false) disable swipe to left/right gestures
         >
           <TabScreen label="" icon="home">
-            <View style={{ flex: 1, alignItems: "center" }}>
+            <View style={{ flex: 1, alignItems: "center", marginBottom: 10 }}>
               <FlatList
                 numColumns={2}
                 onRefresh={refetch}
-                refreshing={isLoading}
+                onEndReached={loadMore}
+                refreshing={isLoadingProducts}
                 contentContainerStyle={{ justifyContent: "center" }}
                 style={{
                   flexWrap: "wrap",
                   display: "flex",
                   width: "100%",
                 }}
-                data={userProduct?.data || []}
+                data={updatedData || []}
                 renderItem={(item) => (
                   <DetailItem navigation={navigation} item={item} />
                 )}
                 keyExtractor={(data, index) => index}
               />
+              {loadingMore && <ActivityIndicator size={20} style={{}} />}
             </View>
           </TabScreen>
 
           <TabScreen
-            label="2"
+            label=""
             icon="message"
             // optional props
             // onPressIn={() => {
@@ -222,9 +251,7 @@ const DetailView = ({ navigation, route }) => {
             //   console.log('onPress explore');
             // }}
           >
-            <View style={{ flex: 1 }}>
-              <Text>comming soon</Text>
-            </View>
+            <View style={{ flex: 1 }}>{/* <Text>comming soon</Text> */}</View>
           </TabScreen>
         </Tabs>
       </View>
@@ -258,6 +285,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.body,
     padding: design.padding1,
     paddingHorizontal: 3,
+    paddingTop:20
   },
   tinyLogo: {
     height: 170,

@@ -32,7 +32,7 @@ const ProfileItem = ({
         </View>
       </TouchableWithoutFeedback>
       <View style={{ ...styles.footerItem }}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+        <View style={{ flexDirection: "row", alignItems: "center", maxWidth:"70%" }}>
           <View>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
               <Text
@@ -77,7 +77,7 @@ const ProfileItem = ({
             >
               {item?.item?.title}
             </Text>
-            <Text
+            <Text numberOfLines={6}
               style={{
                 ...fonts.small,
                 fontWeight: "200",
@@ -141,6 +141,8 @@ const styles = StyleSheet.create({
     elevation: 5,
     paddingBottom: 5,
     margin: 1,
+    maxHeight:300,
+
   },
 
   stock: {

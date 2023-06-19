@@ -25,6 +25,7 @@ import { Avatar, Modal, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../redux/reducers/usersSlice";
 import CheckBox from "../components/CheckBox";
+import { StatusBar } from 'expo-status-bar';
 import { useClientQuery, useMutations } from "../services/api";
 import { appToast } from "../components/Helpers";
 import WithSpinner from "../components/withspinner";
@@ -85,6 +86,7 @@ const Settings = ({ navigation, setLoading }) => {
 
   return (
     <>
+     <StatusBar style="dark" />
       <ScrollView>
         <Portal>
           <Modal
@@ -279,7 +281,12 @@ const Settings = ({ navigation, setLoading }) => {
           >
             <TouchableHighlight
               underlayColor={colors.body6}
-              onPress={() => null}
+              // onPress={() => null}
+              onPress={() =>
+                Linking.openURL(
+                  "mailto:cartoraapp@gmail.com?subject=Feedback&body=''"
+                )
+              }
             >
               <Text
                 style={{
@@ -367,7 +374,7 @@ const Settings = ({ navigation, setLoading }) => {
                   const [key, value] = entry;
                   return (
                     value == true && (
-                      <View style={styles.tags}>
+                      <View key={key} style={styles.tags}>
                         <Text style={{ fontSize: 11 }}> # {key}</Text>
                       </View>
                     )
