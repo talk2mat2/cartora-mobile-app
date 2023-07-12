@@ -8,8 +8,9 @@ import { logOut } from "../redux/reducers/usersSlice";
 // import https from "https"
 
 // const baseUrl = getEnvVars().apiUrl;
-// const baseUrl = "http://www.cserver.somee.com/api/v1";
-const baseUrl = "http://192.168.8.103:5262/api/v1";
+// export const baseUrl= "http://www.cserver.somee.com/api/v1";
+export const baseUrl= "https://www.cartoraapp.lat/api/v1";
+// export const baseUrl= "http://192.168.8.101:5274/api/v1";
 // axios.defaults.httpAgent=new https.Agent({
 //   rejectUnauthorized:false
 // })
@@ -35,6 +36,7 @@ export const useClientQuery = (key) => {
         .then((res) => res.data)
         .catch((err) => {
           console.log("query error=", err);
+          console.log(err?.response)
           err.response.data.statusCode = err?.response?.status;
           throw err?.response?.data;
         });
@@ -74,10 +76,12 @@ export const useMutations = () => {
     console.log("mutate normal caled", key);
     return rootApi(hash, null)
       [method?.toLowerCase()](`/${key}`, data)
-      .then((res) => res.data)
+      .then((res) => {
+
+        return res.data})
       .catch((err) => {
         console.log("error=", err);
-
+console.log("an err",err?.response)
         err.response.data.statusCode = err.response?.status;
         throw err?.response?.data;
       });
@@ -131,6 +135,7 @@ export const useUploadMutations = () => {
     //     throw err?.response?.data;
     //   });
 
+    
     return axios
       .post(baseUrl + "/" + key, data, {
         headers: {
@@ -141,8 +146,8 @@ export const useUploadMutations = () => {
       })
       .then((res) => res.data)
       .catch((err) => {
-        // console.log(err.response);
-        return err?.response.data;
+        err.response.data.statusCode = err.response?.status;
+        throw err?.response.data;
       });
   };
   const {
@@ -151,15 +156,20 @@ export const useUploadMutations = () => {
     error,
     isLoading,
   } = useMutation(mutateFunction);
+  const dispatch = useDispatch();
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     // console.log(error.response);
-  //     // Handle mutation errors here
-  //     handleError(error);
-  //   }
-  // }, [isError, error]);
-
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
+  React.useEffect(() => {
+    if (isError) {
+      if (error?.statusCode == "401") {
+        alert("Login required");
+        setTimeout(handleLogout, 3000);
+      }
+      // Handle mutation errors here
+    }
+  }, [isError, error]);
   const mutate = (
     { key, method, data },
     { onSuccess = () => {}, onError = () => {}, onSettled = () => {} }

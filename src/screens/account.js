@@ -171,7 +171,7 @@ const Account = ({ navigation, setLoading }) => {
           // setLoading(false);
           const newUpdates = updatedData?.filter((item) => item?.id != id);
 
-          
+          setUpdatedData(newUpdates)
           refetchCount();
           show(res?.message, {
             type: "normal",
@@ -436,7 +436,7 @@ const Account = ({ navigation, setLoading }) => {
                   }}
                   data={updatedData || []}
                   renderItem={(item) => (
-                    <ProfileItem
+                    <ProfileItem id={user?.id}
                       navigation={navigation}
                       item={item}
                       handleDelete={handleDelete}

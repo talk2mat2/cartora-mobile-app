@@ -27,6 +27,9 @@ import knittersList from "../screens/knittersList";
 import knittedList from "../screens/knittedList";
 import Editcart from "../screens/editcart";
 import privacypolicy from "../screens/privacypolicy";
+import forgotpass from "../screens/forgotpass";
+import setNewPass from "../screens/setNewPass";
+import codescreen from "../screens/codescreen";
 
 const HomeScreen = () => {
   const user = useSelector(({ user }) => user);
@@ -67,9 +70,12 @@ const Main = () => {
         {!isLoggedIn && (
           <>
             <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="SetNewPass" component={setNewPass} />
+            <Stack.Screen name="ForgotPass" component={forgotpass} />
             <Stack.Screen name="Signup" component={SignUp} />
 
             <Stack.Screen name="NewPassword" component={NewPassword} />
+            <Stack.Screen name="CodeScreen" component={codescreen} />
             <Stack.Screen name="SuccessVerify" component={SuccessVerify} />
           </>
         )}

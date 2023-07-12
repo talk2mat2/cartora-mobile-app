@@ -12,20 +12,26 @@ import { useTheme, Avatar } from "react-native-paper";
 import EntypoIcons from "@expo/vector-icons/Entypo";
 import ButtonC from "./buttonc";
 import { numberWithCommas } from "./Helpers";
-const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
+const ProfileItem = ({ item, navigation, handleDelete = () => {}, id }) => {
   const { colors, fonts } = useTheme();
 
   return (
     <TouchableWithoutFeedback
       // onPress={() => navigation?.navigate("UserDiscover")}
-      onPress={() => navigation?.navigate("UserDiscover")}
+      onPress={() => navigation?.navigate("UserDiscover", { userId: id })}
     >
       <View style={{ ...styles.container, backgroundColor: colors.body2 }}>
         <View style={{ width: "100%", aspectRatio: 1 }}>
           <Image style={styles.stock} source={{ uri: item?.item?.snapshot }} />
         </View>
         <View style={{ ...styles.footerItem }}>
-          <View style={{ flexDirection: "row", alignItems: "center" ,maxWidth:"70%"}}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              maxWidth: "60%",
+            }}
+          >
             <View>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
@@ -71,7 +77,8 @@ const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
               >
                 {item?.item?.title}
               </Text>
-              <Text  numberOfLines={8}
+              <Text
+                numberOfLines={8}
                 style={{
                   ...fonts.small,
                   fontWeight: "200",
@@ -98,6 +105,15 @@ const ProfileItem = ({ item, navigation, handleDelete = () => {} }) => {
           title="ORDER NOW"
         /> */}
           <AntDesign
+            onPress={() =>
+              navigation?.navigate("EditCart", { item: item?.item })
+            }
+            name="edit"
+       
+            size={24}
+          />
+          <AntDesign
+               style={{ marginLeft:9 }}
             onPress={() => handleDelete(item?.item?.id)}
             name="delete"
             size={24}

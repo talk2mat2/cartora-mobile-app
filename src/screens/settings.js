@@ -12,6 +12,7 @@ import {
   TouchableHighlight,
   ScrollView,
   Keyboard,
+  Alert,
 } from "react-native";
 
 import { color, design } from "../constants";
@@ -25,8 +26,8 @@ import { Avatar, Modal, Portal } from "react-native-paper";
 import { useDispatch, useSelector } from "react-redux";
 import { logOut } from "../redux/reducers/usersSlice";
 import CheckBox from "../components/CheckBox";
-import { StatusBar } from 'expo-status-bar';
-import { useClientQuery, useMutations } from "../services/api";
+import { StatusBar } from "expo-status-bar";
+import { baseUrl, useClientQuery, useMutations } from "../services/api";
 import { appToast } from "../components/Helpers";
 import WithSpinner from "../components/withspinner";
 
@@ -34,9 +35,11 @@ const Settings = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const user = useSelector(({ user }) => user.data);
   const dispatch = useDispatch();
+  const [password, setPassword] = React.useState("");
   const { data, isError, isLoading, refetch } = useClientQuery(
     `Users/fetchUserTags/${user?.id}`
   );
+  const [eidtText, setEdittest] = useState(false);
   const { mutate } = useMutations();
   const [showTags, setshowTags] = useState(false);
   const handleLogout = () => {
@@ -45,9 +48,12 @@ const Settings = ({ navigation, setLoading }) => {
   const hideEditTags = () => setshowTags(false);
   const showEditTags = () => setshowTags(true);
   const { show } = appToast();
+  const showEditTest = () => setEdittest(true);
+  const hideEditTest = () => setEdittest(false);
 
   const subMitdata = (datas) => {
     // console.log(datas)
+
     console.log(datas);
     mutate(
       {
@@ -77,17 +83,110 @@ const Settings = ({ navigation, setLoading }) => {
       }
     );
   };
+
+  const handleDeleteAccount = () => {
+    if (!password) {
+      return show("Password is required");
+    }
+    const payload = {
+      password: password,
+      id: user?.id,
+    };
+    mutate(
+      {
+        key: "Users/DeletemyAccount",
+        method: "post",
+        data: payload,
+      },
+      {
+        onSuccess: (res) => {
+          setLoading(false);
+          show(res?.message, {
+            type: "normal",
+          });
+          setTimeout(() => {
+            handleLogout();
+          }, 2000);
+        },
+        onError: (error) => {
+          setLoading(false);
+          setPassword("");
+          show(error?.message);
+        },
+      }
+    );
+  };
   // console.log(
   //   data?.data?.sort(
   //     (a, b) => [true, false].indexOf(a) > [true, false].indexOf(b)
   //   ),
   //   "filter"
   // );
-
+  const PromptDelete = () =>
+    Alert.alert(
+      "Delete Account",
+      "Your Account with Cartora will be deleted. This action can not be reversed",
+      [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        {
+          text: "Proceed",
+          onPress: () => {
+            showEditTest();
+          },
+        },
+      ]
+    );
   return (
     <>
-     <StatusBar style="dark" />
-      <ScrollView>
+      <StatusBar style="dark" />
+      <Portal>
+        <Modal
+          visible={eidtText}
+          onDismiss={hideEditTest}
+          contentContainerStyle={{
+            ...styles.modal1,
+            backgroundColor: colors.body,
+          }}
+        >
+          <View style={{ marginBottom: 8 }}>
+            <Text
+              style={{ ...fonts.small, fontWeight: "800", textAlign: "center" }}
+            >
+              Confirm Account Password
+            </Text>
+          </View>
+
+          <View style={{ ...styles.editText }}>
+            <TextInputs
+              secureTextEntry={true}
+              style={styles.input2}
+              value={password}
+              onChangeText={(txt) => setPassword(txt)}
+              placeholder="Password"
+            />
+          </View>
+
+          <View style={{ alignItems: "flex-end" }}>
+            <ButtonC
+              style={{ backgroundColor: colors.primary, paddingHorizontal: 20 }}
+              textStyle={{ color: colors.textColor2, fontWeight: "700" }}
+              title="Continue"
+              onPress={() => {
+                hideEditTest();
+                handleDeleteAccount();
+                // setDetailsFull(details);
+                // setDetailsFulltitle(detailstitle);
+                // setDetailsPromofull(detailsPromo);
+              }}
+            />
+          </View>
+        </Modal>
+      </Portal>
+      <ScrollView style={{ backgroundColor: colors.body }}>
         <Portal>
           <Modal
             visible={showTags}
@@ -331,7 +430,9 @@ const Settings = ({ navigation, setLoading }) => {
             </TouchableHighlight>
             <TouchableHighlight
               underlayColor={colors.body6}
-              onPress={() => navigation?.navigate("PrivacyPolicy")}
+              onPress={()=>Linking.openURL(
+                baseUrl+"/Users/privacy_policy"
+              )}
             >
               <Text
                 style={{
@@ -445,7 +546,7 @@ const Settings = ({ navigation, setLoading }) => {
                   ...fonts.small,
                   fontWeight: "700",
                   fontSize: 16,
-                  lineHeight: 17,
+                  lineHeight: 10,
                   paddingVertical: 5,
                   textAlign: "center",
                 }}
@@ -458,12 +559,17 @@ const Settings = ({ navigation, setLoading }) => {
                   Terms of Service and privacy Policy{"\n"}
                   {"\n"}
                 </Text>
+              </Text>
+              <TouchableHighlight
+                underlayColor={colors.body6}
+                onPress={PromptDelete}
+              >
                 <Text
                   style={{ ...fonts.small, fontWeight: "300", fontSize: 13 }}
                 >
                   Delete My Cartora Account{"\n"}
                 </Text>
-              </Text>
+              </TouchableHighlight>
             </View>
           </View>
         </View>
@@ -503,14 +609,18 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
   editText: {
-    height: 180,
+    height: 100,
     padding: 10,
     borderRadius: 10,
     marginBottom: 10,
-    borderWidth: 1,
+    // borderWidth: 1,
   },
   inputText: {
     fontSize: 17,
+  },
+  input2: {
+    marginBottom: 0,
+    marginTop: 0,
   },
 });
 

@@ -20,14 +20,11 @@ import { logIn } from "../redux/reducers/usersSlice";
 import { appToast, AsyncSave } from "../components/Helpers";
 
 const logiSchema = Yup.object().shape({
-  email: Yup.string().required("Required"),
-  password: Yup.string()
-    .min(5, "password is too short")
-    .max(80, "password is too long")
-    .required(),
+  password: Yup.string().min(7, "too shot").required("Required"),
+  password2: Yup.string().min(7, "too shot").required("Required"),
 });
 
-const Login = ({ navigation, setLoading }) => {
+const SetNewPass = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const { mutate } = useMutations();
 
@@ -35,6 +32,9 @@ const Login = ({ navigation, setLoading }) => {
 
   const dispatch = useDispatch();
   const subMitdata = (datas) => {
+    if (datas?.password != datas?.password2) {
+      return show("Both Password do not match");
+    }
     mutate(
       {
         key: "Users/login",
@@ -66,7 +66,7 @@ const Login = ({ navigation, setLoading }) => {
     <View style={styles.container}>
       <Formik
         validationSchema={logiSchema}
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ password2: "", password: "" }}
         onSubmit={(values) => {
           subMitdata(values);
           setLoading(true);
@@ -83,32 +83,37 @@ const Login = ({ navigation, setLoading }) => {
         }) => (
           <View style={{ width: "75%" }}>
             {/* src/screens/login.js{" "} */}
-            <View style={{ alignItems: "center" }}>
+            {/* <View style={{ alignItems: "center" }}>
               <Image
                 style={styles.tinyLogo}
                 source={require("../../assets/logo2.png")}
               />
-            </View>
-            <View style={{ marginVertical: 7 }}>
-              <TextInputs
-                style={styles.input2}
-                value={values.email}
-                onChangeText={(text) => setFieldValue("email", text)}
-                placeholder="Email Address or Username"
-              />
-              <HelperText
-                style={styles.helperText}
-                type="error"
-                visible={errors.email}
+            </View> */}
+            <View
+              style={{
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: color.blue,
+                  marginVertical: 5,
+                  fontWeight: "700",
+                  fontSize: 17,
+                }}
               >
-                {errors.email}
-              </HelperText>
+                Set New Password
+              </Text>
+            </View>
+            <View style={{ marginVertical: 7, marginTop: 20 }}>
               <TextInputs
-                secureTextEntry={true}
                 style={styles.input2}
                 value={values.password}
-                onChangeText={(txt) => setFieldValue("password", txt)}
-                placeholder="Password"
+                secureTextEntry={true}
+                onChangeText={(text) => setFieldValue("password", text)}
+                placeholder="New Password"
               />
               <HelperText
                 style={styles.helperText}
@@ -118,37 +123,34 @@ const Login = ({ navigation, setLoading }) => {
                 {errors.password}
               </HelperText>
             </View>
+            <View style={{ marginVertical: 2 }}>
+              <TextInputs
+                style={styles.input2}
+                value={values.password2}
+                secureTextEntry={true}
+                onChangeText={(text) => setFieldValue("password2", text)}
+                placeholder="Repeat New Password"
+              />
+              <HelperText
+                style={styles.helperText}
+                type="error"
+                visible={errors.email}
+                sec
+              >
+                {errors.password2}
+              </HelperText>
+            </View>
             <View style={{ alignItems: "center", marginTop: 10 }}>
               <ButtonC
                 onPress={handleSubmit}
                 style={{ width: 110 }}
-                title="Login"
+                title="Procees"
               />
             </View>
             <View
               style={{ alignItems: "center", marginTop: 10, paddingBottom: 8 }}
             >
-              <Text
-                style={{
-                  color: color.blue,
-                  marginVertical: 5,
-                  fontWeight: "700",
-                }}
-              >
-                New Here ?
-              </Text>
-              <ButtonC
-                onPress={() => navigation.navigate("Signup")}
-                style={{ paddingHorizontal: 10 }}
-                title="Create New Account"
-              />
-              <View style={{ marginTop: "5%" }}>
-                <ButtonC
-                  onPress={() => navigation.navigate("ForgotPass")}
-                  style={{ paddingHorizontal: 10,borderWidth:0 }}
-                  title="Forgot Password ?"
-                />
-              </View>
+              <View style={{ marginTop: "5%" }}></View>
             </View>
           </View>
         )}
@@ -179,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WithSpinner(Login);
+export default WithSpinner(SetNewPass);

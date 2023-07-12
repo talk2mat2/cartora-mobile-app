@@ -25,6 +25,7 @@ import { appToast, numberWithCommas } from "./Helpers";
 import { debounce } from "lodash";
 import { AntDesign } from "@expo/vector-icons";
 import { useMutations } from "../services/api";
+import ViewShot from "react-native-view-shot";
 import { useSelector } from "react-redux";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
@@ -41,6 +42,7 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
   const { mutate: knitmutate, isLoading: knitisloading } = useMutations();
   const openMenu = () => setVisible(true);
   const _animation = new Animated.Value(0);
+  const ref = React.useRef();
   const closeMenu = () => setVisible(false);
   // const handleknit = () => {
   //   show("this feature is comming soon");
@@ -83,23 +85,29 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
   }, [learnMore]);
 
   const share = async (imageURL) => {
+    let newImageUrl;
+    if (Platform.OS === "ios") {
+      newImageUrl = "file://" + imageURL;
+    } else {
+      newImageUrl = imageURL;
+    }
     const options = {
       mimeType: "image/jpeg",
       dialogTitle: "Cartora- item",
       UTI: "image/jpeg",
     };
 
-    await FileSystem.downloadAsync(imageURL, fileUri)
-      .then(({ uri }) => {
-        // setState(`Downloaded image to ${uri}`);
-      })
-      .catch((err) => {
-        alert("Error occured");
-        console.log(JSON.stringify(err));
-      });
+    // await FileSystem.downloadAsync(imageURL, fileUri)
+    //   .then(({ uri }) => {
+    //     // setState(`Downloaded image to ${uri}`);
+    //   })
+    //   .catch((err) => {
+    //     alert("An error occured");
+    //     console.log(JSON.stringify(err));
+    //   });
 
     // Sharing only allows one to share a file.
-    Sharing.shareAsync(fileUri, options)
+    Sharing.shareAsync(newImageUrl, options)
       .then((data) => {
         // alert("Shared");
       })
@@ -107,6 +115,17 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
         // alert("Error sharing image");
         console.log(JSON.stringify(err));
       });
+  };
+
+  const captureView = () => {
+    ref.current.capture().then((uri) => {
+      //we will upload the edited frame view for sharing to socialmedia
+      // console.log("do something with ", uri);
+      // console.log(uri)
+      // return
+      // console.log(uri)
+      share(uri);
+    });
   };
   const likeProducts = (datas) => {
     const payload = {
@@ -229,8 +248,6 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
           </View>
         </TouchableOpacity>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
-      
-
           <Menu
             visible={visible}
             onDismiss={closeMenu}
@@ -252,7 +269,8 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
               titleStyle={{ ...fonts.small }}
               style={{ height: 40, backgroundColor: colors.body }}
               onPress={() => {
-                share(item?.snapshot);
+                captureView();
+                // share(item?.snapshot);
                 // console.log(item)
                 closeMenu();
               }}
@@ -269,7 +287,6 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
               title="Edit"
             /> */}
 
-          
             {user?.id == item?.userId && (
               <Menu.Item
                 titleStyle={{ ...fonts.small }}
@@ -284,113 +301,128 @@ const UsersDiscoverItem = ({ item, navigation, DeleteProducts, refetch }) => {
           </Menu>
         </View>
       </View>
-      <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
-        {learnMore && (
-          <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
-            <Text style={{ ...fonts.small, color: colors.body }}>
-              CLICK TO LEARN MORE ON THIS PRODUCT
-            </Text>
-            <ButtonC
-              onPress={() => {
-                Linking.openURL(devLink);
-              }}
-              style={{
-                paddingHorizontal: 10,
-                backgroundColor: colors.body,
-                borderWidth: 0,
-                marginTop: 9,
-              }}
-              title="LEARN MORE"
-            />
-          </Animated.View>
-        )}
+      <ViewShot
+        style={{ backgroundColor: "#ffffff", borderRadius: 10 }}
+        ref={ref}
+        options={{ format: "jpg", quality: 1 }}
+      >
+        <View style={{ width: "100%", aspectRatio: 1, position: "relative" }}>
+          {learnMore && (
+            <Animated.View style={{ ...styles.overLay, ...animatedStyle }}>
+              <Text style={{ ...fonts.small, color: colors.body }}>
+                CLICK TO LEARN MORE ON THIS PRODUCT
+              </Text>
+              <ButtonC
+                onPress={() => {
+                  Linking.openURL(devLink);
+                }}
+                style={{
+                  paddingHorizontal: 10,
+                  backgroundColor: colors.body,
+                  borderWidth: 0,
+                  marginTop: 9,
+                }}
+                title="LEARN MORE"
+              />
+            </Animated.View>
+          )}
 
-        <TouchableWithoutFeedback onPress={() => openOverlay()}>
-          <Image
-            style={styles.stock}
-            // source={require("../../assets/stock.png")}
-            source={{ uri: item?.snapshot || "" }}
-            snapshot
-          />
-        </TouchableWithoutFeedback>
-      </View>
-      <View style={{ ...styles.footerItem }}>
-        <View style={{ maxWidth: "60%", padding: 3 }}>
-          <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <TouchableWithoutFeedback onPress={() => openOverlay()}>
+            <Image
+              style={styles.stock}
+              // source={require("../../assets/stock.png")}
+              source={{ uri: item?.snapshot || "" }}
+              snapshot
+            />
+          </TouchableWithoutFeedback>
+        </View>
+        <View style={{ ...styles.footerItem }}>
+          <View style={{ maxWidth: "60%", padding: 3 }}>
+            <View style={{ flexDirection: "row", alignItems: "center" }}>
+              <Text
+                style={{
+                  ...fonts.small,
+                  fontWeight: "700",
+                  fontSize: 16,
+                }}
+              >
+                N{item?.price ? numberWithCommas(item?.price) : ""}
+              </Text>
+              {item?.stock == true ? (
+                <Text
+                  style={{
+                    ...fonts.small,
+                    marginLeft: 20,
+                    fontSize: 13,
+                    color: colors.body4,
+                  }}
+                >
+                  in stock
+                </Text>
+              ) : (
+                <Text
+                  style={{
+                    ...fonts.small,
+                    marginLeft: 20,
+                    fontSize: 13,
+                    color: colors.primary,
+                  }}
+                >
+                  out of stock
+                </Text>
+              )}
+              <Text
+                style={{
+                  ...fonts.small,
+                  marginLeft: 20,
+                  fontSize: 13,
+                }}
+              >
+                {item?.likeCount || "0"} likes
+              </Text>
+            </View>
             <Text
               style={{
                 ...fonts.small,
-                fontWeight: "700",
-                fontSize: 16,
+                fontWeight: "bold",
+                fontSize: 14,
               }}
             >
-              N{item?.price ? numberWithCommas(item?.price) : ""}
+              {item?.title}
             </Text>
-            {item?.stock == true ? (
-              <Text
-                style={{
-                  ...fonts.small,
-                  marginLeft: 20,
-                  fontSize: 13,
-                  color: colors.body4,
-                }}
-              >
-                in stock
-              </Text>
-            ) : (
-              <Text
-                style={{
-                  ...fonts.small,
-                  marginLeft: 20,
-                  fontSize: 13,
-                  color: colors.primary,
-                }}
-              >
-                out of stock
-              </Text>
-            )}
+            <Text
+              ellipsizeMode="tail"
+              numberOfLines={4}
+              style={{
+                ...fonts.small,
+                fontWeight: "200",
+                fontSize: 13,
+              }}
+            >
+              {item?.description}
+            </Text>
           </View>
-          <Text
+
+          <ButtonC
+            onPress={() => {
+              Linking.openURL(devLink);
+            }}
             style={{
-              ...fonts.small,
+              paddingHorizontal: 20,
+              borderColor: colors.body,
+              backgroundColor: colors.body4,
+              marginRight: 5,
+              paddingVertical: 5,
+            }}
+            textStyle={{
+              fontSize: 15,
               fontWeight: "bold",
-              fontSize: 14,
+              color: colors.textColor2,
             }}
-          >
-            {item?.title}
-          </Text>
-          <Text
-            ellipsizeMode="tail"
-            numberOfLines={4}
-            style={{
-              ...fonts.small,
-              fontWeight: "200",
-              fontSize: 13,
-            }}
-          >
-            {item?.description}
-          </Text>
+            title="ORDER NOW"
+          />
         </View>
-{/* 
-        <ButtonC
-          onPress={() => {
-            Linking.openURL(devLink);
-          }}
-          style={{
-            paddingHorizontal: 20,
-            borderColor: colors.body,
-            backgroundColor: colors.body4,
-            marginRight: 5,
-            paddingVertical: 5,
-          }}
-          textStyle={{
-            fontSize: 15,
-            fontWeight: "bold",
-            color: colors.textColor2,
-          }}
-          title="ORDER NOW"
-        /> */}
-      </View>
+      </ViewShot>
     </View>
   );
 };

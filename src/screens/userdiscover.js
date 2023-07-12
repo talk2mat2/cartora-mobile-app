@@ -25,11 +25,13 @@ import { useSelector } from "react-redux";
 import { AntDesign } from "@expo/vector-icons";
 import UsersDiscoverItem from "../components/UsersdiscoverItem";
 
-const UserDiscover = ({ navigation, setLoading }) => {
+const UserDiscover = ({ navigation, setLoading, route }) => {
   const { colors, fonts, font } = useTheme();
   const user = useSelector(({ user }) => user.data);
+  const { userId } = route?.params;
   const { data, isError, isLoading, refetch } = useClientQuery(
-    `Products/getUserProducst/${user.id}`
+    // `Products/getUserProducst/${user.id}`
+    `Products/getUserProducst/${userId}`
   );
   const [updatedData, setUpdatedData] = React.useState([]);
   const { mutate } = useMutations();
@@ -44,7 +46,7 @@ const UserDiscover = ({ navigation, setLoading }) => {
   React.useEffect(() => {
     setUpdatedData(data?.data);
   }, [isLoading, data]);
-  // console.log(data);
+
   const DeleteProducts = (id) => {
     // console.log(`Products/deleteProduct/${id}`);
 
@@ -79,13 +81,31 @@ const UserDiscover = ({ navigation, setLoading }) => {
   };
   return (
     <View style={{ ...styles.container, backgroundColor: colors.body }}>
-      <View>
+      {/* <View>
         <TouchableOpacity
           style={{ width: 40 }}
           onPress={() => navigation.goBack()}
         >
           <AntDesign name="left" size={30} color="black" />
         </TouchableOpacity>
+      </View> */}
+      <View style={{ flexDirection: "row", alignItems: "center" ,height:50}}>
+        <TouchableOpacity
+          style={{ width: 40 }}
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="left" size={30} color="black" />
+        </TouchableOpacity>
+        <Text
+          style={{
+            ...fonts.medium,
+            // fontSize: 25,
+            marginLeft: "27%",
+            fontWeight: "bold",
+          }}
+        >
+          {data?.data?.[0]?.user?.brand || "Details"}
+        </Text>
       </View>
       {isLoading && <ActivityIndicator size={50} style={styles.spinner} />}
       {/* <ScrollView style={{ backgroundColor: color.body, ...styles.content }}>

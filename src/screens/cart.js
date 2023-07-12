@@ -139,10 +139,10 @@ const Cart = ({ navigation, setLoading }) => {
       {
         onSuccess: (success) => {
           setLoading(false);
-          // setImage(null)
-          // setEditPrice(0)
-          // setDetailstitle("")
-          // setDetailsFull("")
+          setImage(null)
+          setEditPrice(0)
+          setDetailstitle("")
+          setDetailsFull("")
           show(success?.message, {
             type: "normal",
           });
@@ -202,6 +202,7 @@ const Cart = ({ navigation, setLoading }) => {
       },
       {
         onSuccess: (success) => {
+          console.log(success)
           setLoading(false);
           setImage(null)
           setEditPrice(0)

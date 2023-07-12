@@ -20,14 +20,10 @@ import { logIn } from "../redux/reducers/usersSlice";
 import { appToast, AsyncSave } from "../components/Helpers";
 
 const logiSchema = Yup.object().shape({
-  email: Yup.string().required("Required"),
-  password: Yup.string()
-    .min(5, "password is too short")
-    .max(80, "password is too long")
-    .required(),
+  email: Yup.string().email("invalid email").required("Required"),
 });
 
-const Login = ({ navigation, setLoading }) => {
+const ForgotPass = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const { mutate } = useMutations();
 
@@ -35,11 +31,13 @@ const Login = ({ navigation, setLoading }) => {
 
   const dispatch = useDispatch();
   const subMitdata = (datas) => {
+    // navigation?.navigate("CodeScreen", { email: datas });
+  
     mutate(
       {
-        key: "Users/login",
+        key: `Users/ForgotPassword?email=${datas}`,
         method: "post",
-        data: datas,
+        data: null
       },
       {
         onSuccess: (res) => {
@@ -47,12 +45,12 @@ const Login = ({ navigation, setLoading }) => {
           show(res?.message, {
             type: "normal",
           });
-          dispatch(logIn(res.data[0]));
-          AsyncSave("token", res?.data?.[0]?.token);
+          navigation?.navigate("CodeScreen", { email: datas });
         },
         onError: (error) => {
           setLoading(false);
           show(error?.message);
+          z;
         },
       }
     );
@@ -66,9 +64,9 @@ const Login = ({ navigation, setLoading }) => {
     <View style={styles.container}>
       <Formik
         validationSchema={logiSchema}
-        initialValues={{ email: "", password: "" }}
+        initialValues={{ email: "" }}
         onSubmit={(values) => {
-          subMitdata(values);
+          subMitdata(values.email);
           setLoading(true);
           Keyboard.dismiss();
         }}
@@ -83,18 +81,41 @@ const Login = ({ navigation, setLoading }) => {
         }) => (
           <View style={{ width: "75%" }}>
             {/* src/screens/login.js{" "} */}
-            <View style={{ alignItems: "center" }}>
+            {/* <View style={{ alignItems: "center" }}>
               <Image
                 style={styles.tinyLogo}
                 source={require("../../assets/logo2.png")}
               />
+            </View> */}
+            {/* <ButtonC
+              // onPress={() => navigation?.navigate("SetNewPass")}
+              onPress={() => navigation?.navigate("CodeScreen")}
+              style={{ width: 110 }}
+              title="Procees"
+            /> */}
+            <View
+              style={{
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
+              <Text
+                style={{
+                  textAlign: "center",
+                  color: color.blue,
+                  marginVertical: 5,
+                  fontWeight: "700",
+                }}
+              >
+                Enter the email address Linked {"\n"} to your account
+              </Text>
             </View>
             <View style={{ marginVertical: 7 }}>
               <TextInputs
                 style={styles.input2}
                 value={values.email}
                 onChangeText={(text) => setFieldValue("email", text)}
-                placeholder="Email Address or Username"
+                placeholder="Email Address"
               />
               <HelperText
                 style={styles.helperText}
@@ -103,52 +124,18 @@ const Login = ({ navigation, setLoading }) => {
               >
                 {errors.email}
               </HelperText>
-              <TextInputs
-                secureTextEntry={true}
-                style={styles.input2}
-                value={values.password}
-                onChangeText={(txt) => setFieldValue("password", txt)}
-                placeholder="Password"
-              />
-              <HelperText
-                style={styles.helperText}
-                type="error"
-                visible={errors.email}
-              >
-                {errors.password}
-              </HelperText>
             </View>
             <View style={{ alignItems: "center", marginTop: 10 }}>
               <ButtonC
                 onPress={handleSubmit}
                 style={{ width: 110 }}
-                title="Login"
+                title="Procees"
               />
             </View>
             <View
               style={{ alignItems: "center", marginTop: 10, paddingBottom: 8 }}
             >
-              <Text
-                style={{
-                  color: color.blue,
-                  marginVertical: 5,
-                  fontWeight: "700",
-                }}
-              >
-                New Here ?
-              </Text>
-              <ButtonC
-                onPress={() => navigation.navigate("Signup")}
-                style={{ paddingHorizontal: 10 }}
-                title="Create New Account"
-              />
-              <View style={{ marginTop: "5%" }}>
-                <ButtonC
-                  onPress={() => navigation.navigate("ForgotPass")}
-                  style={{ paddingHorizontal: 10,borderWidth:0 }}
-                  title="Forgot Password ?"
-                />
-              </View>
+              <View style={{ marginTop: "5%" }}></View>
             </View>
           </View>
         )}
@@ -179,4 +166,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WithSpinner(Login);
+export default WithSpinner(ForgotPass);

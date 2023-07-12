@@ -427,6 +427,8 @@ const EditCart = ({ navigation, setLoading, route, handleHide, items }) => {
           // flexDirection: "row",
           flexGrow: 0,
           marginTop: "auto",
+          position:"absolute",
+          bottom:4,
           // marginBottom: "20%",
           elevation: 2,
           paddingVertical: 1,

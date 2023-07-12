@@ -225,7 +225,7 @@ const CartEdit = ({
             >
               {title}
             </Text>
-            <ScrollView style={{ height: "9%" }}>
+            <ScrollView style={{height:"20%" }}>
               <Text
                 style={{
                   ...fonts.small,

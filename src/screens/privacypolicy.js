@@ -12,12 +12,14 @@ import {
   TouchableHighlight,
   ScrollView,
   Keyboard,
+  SafeAreaView,
 } from "react-native";
 
 import { color, design } from "../constants";
 import { IconButton, useTheme } from "react-native-paper";
 import ButtonC from "../components/buttonc";
 import TextInputs from "../components/textInput";
+// import { WebView } from 'react-native-webview';
 import { Formik } from "formik";
 import { Checkbox } from "react-native-paper";
 import { AntDesign } from "@expo/vector-icons";
@@ -29,6 +31,7 @@ import { useClientQuery, useMutations } from "../services/api";
 import { appToast } from "../components/Helpers";
 import WithSpinner from "../components/withspinner";
 
+
 const PrivacyPolicy = ({ navigation, setLoading }) => {
   const { colors, fonts } = useTheme();
   const user = useSelector(({ user }) => user.data);
@@ -38,6 +41,11 @@ const PrivacyPolicy = ({ navigation, setLoading }) => {
   );
   const { mutate } = useMutations();
   const [showTags, setshowTags] = useState(false);
+  const [pdf, setPdf] = useState("");
+
+
+
+
   const handleLogout = () => {
     dispatch(logOut());
   };
@@ -85,7 +93,8 @@ const PrivacyPolicy = ({ navigation, setLoading }) => {
 
   return (
     <>
-      <Portal>
+      <View></View>
+      {/* <Portal>
         <Modal
           visible={showTags}
           onDismiss={hideEditTags}
@@ -244,8 +253,8 @@ const PrivacyPolicy = ({ navigation, setLoading }) => {
             )}
           </Formik>
         </Modal>
-      </Portal>
-      <View style={styles.container}>
+      </Portal> */}
+      {/* <View style={styles.container}>
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <TouchableOpacity
             style={{ width: 40 }}
@@ -311,7 +320,35 @@ const PrivacyPolicy = ({ navigation, setLoading }) => {
             ))}
           </View>
         </ScrollView>
-      </View>
+      </View> */}
+      {/* <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView
+          style={{ width: "100%" }}
+          contentContainerStyle={{ flexGrow: 1 }}
+        >
+          <WebView
+            style={styles.pdf}
+            useWebKit={true}
+            originWhitelist={["*"]}
+            scrollEnabled={true}
+            mediaPlaybackRequiresUserAction={true}
+            source={{
+              uri: `
+            <html>
+            <object data="${pdf}" type="application/pdf">
+                <embed 
+                    scrollbar="1" 
+                    src="${pdf}" 
+                    type="application/pdf" 
+                   
+                />
+            </object>
+            </html>
+            `,
+            }}
+          />
+        </ScrollView>
+      </SafeAreaView> */}
     </>
   );
 };

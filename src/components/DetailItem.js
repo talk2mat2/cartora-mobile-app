@@ -51,9 +51,10 @@ const DetailItem = ({ item, navigation }) => {
               CLICK TO LEARN MORE ON THIS PRODUCT
             </Text>
             <ButtonC
-              onPress={() => {
-                Linking.openURL(devLink);
-              }}
+              // onPress={() => {
+              //   Linking.openURL(devLink);
+              // }}
+
               style={{
                 paddingHorizontal: 10,
                 backgroundColor: colors.body,
@@ -74,7 +75,12 @@ const DetailItem = ({ item, navigation }) => {
             snapshot
           />
         </TouchableWithoutFeedback> */}
-        <TouchableWithoutFeedback onPress={() => openOverlay()}>
+        {/* <TouchableWithoutFeedback onPress={() => openOverlay()}> */}
+        <TouchableWithoutFeedback
+          onPress={() =>
+            navigation?.navigate("UserDiscover", { userId: item?.item?.userId })
+          }
+        >
           <View style={{ width: "100%", aspectRatio: 1 }}>
             <Image
               style={styles.stock}
